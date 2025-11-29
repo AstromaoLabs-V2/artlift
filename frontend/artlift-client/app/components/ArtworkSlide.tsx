@@ -1,31 +1,32 @@
-'use client';
+"use client";
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
 import Splide, { Splide as SplideInstance, Options } from "@splidejs/splide";
-import "@splidejs/splide/css"; 
-
-
+import "@splidejs/splide/css";
+import "../globals.css";
 
 const images = [
-  "./img/search.png", "./img/search.png", "./img/search.png",
-  "./img/search.png", "./img/search.png", "./img/search.png",
-  "./img/search.png", "./img/search.png", "./img/search.png",
-  "./img/search.png",
+  "/img/couple-artwork.jpg",
+  "/img/star-artwork.png",
+  "/img/search.png",
+  "/img/search.png",
+  "/img/search.png",
+  "/img/search.png",
+  "/img/search.png",
+  "/img/search.png",
+  "/img/search.png",
+  "/img/search.png",
 ];
 
-
-
-
-export function ArtworkSlide(){
+export function ArtworkSlide() {
   const [activeGroup, setActiveGroup] = useState<number>(0);
-  const slideGroup = Math.ceil(images.length/3);
+  const slideGroup = Math.ceil(images.length / 3);
   const mainSliderRef = useRef<SplideInstance | null>(null);
   const ThumbsSliderRef = useRef<SplideInstance | null>(null);
 
-  useEffect(()=>{
-    const mainOptions:Options = {
+  useEffect(() => {
+    const mainOptions: Options = {
       type: "fade",
-      heightRatio: 0.6,
       pagination: false,
       arrows: true,
       cover: true,
@@ -33,7 +34,7 @@ export function ArtworkSlide(){
       rewind: false,
     };
 
-    const thumbsOptions:Options= {
+    const thumbsOptions: Options = {
       rewind: false,
       fixedWidth: 104,
       fixedHeight: 58,
@@ -54,36 +55,36 @@ export function ArtworkSlide(){
       },
     };
 
-    const mainSlider = new Splide("#main-slider",mainOptions);
-     const thumbs = new Splide("#thumbnail-slider",thumbsOptions);
+    const mainSlider = new Splide("#main-slider", mainOptions);
+    const thumbs = new Splide("#thumbnail-slider", thumbsOptions);
 
-     mainSliderRef.current = mainSlider;
-     ThumbsSliderRef.current = thumbs;
+    mainSliderRef.current = mainSlider;
+    ThumbsSliderRef.current = thumbs;
 
-      mainSlider.sync(thumbs);
-      //if picture moves 
-      const handleMove = (_:unknown, newIndex:number)=>{
-      const currentGroup = Math.floor(newIndex/3);
+    mainSlider.sync(thumbs);
+    //if picture moves
+    const handleMove = (_: unknown, newIndex: number) => {
+      const currentGroup = Math.floor(newIndex / 3);
       setActiveGroup(currentGroup);
     };
 
     //if main slider move, works function
-      mainSlider.on("move", handleMove);
-      mainSlider.mount();
-      thumbs.mount();
+    mainSlider.on("move", handleMove);
+    mainSlider.mount();
+    thumbs.mount();
 
-      //initial setting
-      handleMove(null, mainSlider.index); 
+    //initial setting
+    handleMove(null, mainSlider.index);
 
-      //destroy main slider. Initial setting
-      return () => {
+    //destroy main slider. Initial setting
+    return () => {
       mainSlider.destroy();
       thumbs.destroy();
     };
   }, []);
 
-   // click dot and jump
-   /*
+  // click dot and jump
+  /*
     const handleIndicatorClick = (groupIndex: number) => {
     const targetIndex = groupIndex * 3;
     const main = mainSliderRef.current;
@@ -95,11 +96,10 @@ export function ArtworkSlide(){
 
   */
 
-
-   return (
+  return (
     <div className="max-w-3xl mx-auto">
       {/* --- main sliderー --- */}
-      <div id="main-slider" className="splide mb-4">
+      <div id="main-slider" className="splide m-4">
         <div className="splide__track">
           <ul className="splide__list">
             {images.map((src, index) => (
@@ -107,7 +107,7 @@ export function ArtworkSlide(){
                 <img
                   src={src}
                   alt={`slide-${index}`}
-                  className="w-full h-[420px] object-cover rounded-lg"
+                  className="artwork-main-slider rounded-lg"
                 />
               </li>
             ))}
@@ -117,7 +117,7 @@ export function ArtworkSlide(){
 
       {/* --- dot indicatorー --- */}
       <div className="flex justify-center gap-3 mb-4">
-        {Array.from({ length:slideGroup}).map((_, index) => (
+        {Array.from({ length: slideGroup }).map((_, index) => (
           <button
             key={index}
             aria-label={`Group ${index + 1}`}
@@ -147,7 +147,4 @@ export function ArtworkSlide(){
       </div>
     </div>
   );
-  };
-    
-
-   
+}
