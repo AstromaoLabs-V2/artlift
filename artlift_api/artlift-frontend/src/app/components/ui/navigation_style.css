@@ -1,0 +1,80 @@
+/*navigation component*/
+
+.navigation-container {
+  display: flex;
+  margin: 2em;
+  justify-content: center;
+}
+
+.navigation-search nav a {
+  color: #fff;
+}
+
+.nav-bar {
+  display: flex;
+
+  background: linear-gradient(to right, #b7b1f5, #2e2869);
+  height: 70px;
+  border-radius: 16px;
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  flex-direction: row;
+}
+
+.active-glass {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  filter: drop-shadow(0px 4px 4px rgba(0, 0, 0, 0.25));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(4px);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+  width: 120px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  mix-blend-mode: overlay;
+ 
+}
+
+.nav-link {
+  font-size: 16px;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 0.7em 1.5em;
+  transition: all 0.3s ease;
+  text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+}
+
+.active-glass:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+}
+
+.input-navigation {
+  display: flex;
+}
+
+.search-button {
+  background-color: #5a4fcf;
+  padding: 8px;
+  margin: 12px;
+  border-radius: 16px;
+}
+
+.hidden-input {
+  display: none;
+}
+
+.display-input {
+  display: block;
+  border: 1px solid #5a4fcf;
+
+  width: 100%;
+  margin: 5px;
+  border-radius: 10px;
+  height: 30px;
+}
