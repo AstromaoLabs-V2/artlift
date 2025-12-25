@@ -1,0 +1,87 @@
+.category-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.category-button {
+  display: inline-flex;
+  position: relative;
+  width: 130px;
+  height: 50px;
+  border: 1px solid #abadac;
+  border-radius: 28px;
+  padding: 10px;
+  color: #252525;
+  padding-left: 40px;
+  align-items: center;
+}
+
+.category-collctions {
+  display: flex;
+  gap: 10px;
+}
+
+.category-button::before {
+  content: "";
+  background-image: url(/img/icon/window-mark.png);
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-size: contain;
+  padding-right: 10px;
+  left: 15px;
+}
+
+.hover-opacity {
+  opacity: 0.6;
+}
+
+/* Discover Card Styles */
+
+.artist-title-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.artist-title-container button {
+  width: 80px;
+  height: 40px;
+  border-radius: 16px;
+  border: 2px solid #c860fc;
+  background-color: #c860fc;
+  color: #fff;
+}
+
+.artist-title-container button:hover {
+  background-color: #fff;
+  border: 2px solid #c860fc;
+  color: #252525;
+}
+.discover-slider {
+  display: flex;
+  overflow-x: auto;
+  gap: 16px;
+  padding-bottom: 8px;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+}
+.discover-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.artist-cards {
+  min-width: 250px;
+  min-height: 200px;
+  scroll-snap-align: start;
+  border-radius: 16px;
+  transition: background-color 0.3s ease;
+  object-fit: cover;
+}
+
+.artist-cards img {
+  border-radius: 16px;
+}
+.artist-cards img:hover {
+  border: 1px solid #c860fc;
+}
