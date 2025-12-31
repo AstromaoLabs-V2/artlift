@@ -1,0 +1,27 @@
+.artist-page-wrapper {
+  padding: 50px 100px;
+}
+
+.favorite-about-section{
+  max-width:1000px;
+}
+
+.all-artwork-container{
+display:flex;
+justify-content: center;
+margin-top: 30px;
+}
+.all-artwork-container button {
+  width: 80px;
+  height: 40px;
+  border-radius: 16px;
+  border: 2px solid #c860fc;
+  background-color: #c860fc;
+  color: #fff;
+}
+
+.all-artwork-container button:hover {
+  background-color: #fff;
+  border: 2px solid #c860fc;
+  color: #252525;
+}
