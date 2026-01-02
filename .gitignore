@@ -1,4 +1,7 @@
+# Python
+venv/
 .env
-.env.local
-.env.development
-.env.production
+__pycache__/
+*.pyc
+
+

@@ -27,3 +27,6 @@ class User(models.Model):
 
     def __self__(self):
         return self.username
+
+# class Artwork(models.Model):
+#     title = models.CharField(225),
