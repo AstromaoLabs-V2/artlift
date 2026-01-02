@@ -1,14 +1,20 @@
 import "../ui/subscribe_button.css";
+import Image from "next/image";
 
-export default function FollowSubscribe(){
+type Props ={
+  artistIcon:string;
+  artistName:string;
+}
+
+export default function FollowSubscribe({artistIcon, artistName}:Props){
   return(
     <>
     <div className="icon-name">
-      <img src="./img/woman-face-icon.jpg" width={60} height={60} alt="follow icon"></img>
-      <h3>John Due</h3>
+      <Image src={artistIcon} width={60} height={60} alt="follow icon" />
+      <h3>{artistName}</h3>
     </div>
 
-    <div className="follow-subscribe-buttons">
+    <div className="follow-subscribe-buttons mt-4">
       <button className="follow-button" type="button">Follow</button>
       <button className="subscribe-button" type="button">Subscribe</button>
     </div>
