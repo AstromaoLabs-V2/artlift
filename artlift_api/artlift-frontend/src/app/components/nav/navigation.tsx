@@ -26,7 +26,7 @@ const Navigation = () => {
        <div className="navigation-search">
       <nav className="nav-bar">
          <button className="search-button" type="button" onClick={handleSearchClick}>
-          <img src="./img/search.png" width={30} height={30} alt="search button"></img>
+          <img src="/img/search.png" width={30} height={30} alt="search button"></img>
          </button>
         <Link href="/" className={pathname === "/" ? "nav-link active-glass" : "nav-link"}>Home</Link>
         <Link href="/about" className={pathname === "/about" ? "nav-link active-glass" : "nav-link"}>About</Link>
