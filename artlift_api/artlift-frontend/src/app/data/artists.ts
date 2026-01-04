@@ -52,6 +52,13 @@ export const artistData: ArtistDetail[] = [
         rating: 3.5,
         reviewCount: 9,
       },
+
+        {
+        id: 105,
+        thumbnail: "/img/artwork/artwork5.jpg",
+        rating: 4,
+        reviewCount: 12,
+      },
     ]
   },
 

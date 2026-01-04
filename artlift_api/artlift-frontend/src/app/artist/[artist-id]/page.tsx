@@ -1,12 +1,11 @@
 import { artistData } from "@/app/data/artists";
-import Navigation from "../../components/nav/navigation.tsx";
-import "../../components/ui/artist_page_style.css";
-import FollowSubscribe from "../../components/features/FollowSubscribe.tsx";
-import Image from "next/image";
-import ArtworkThumbnail from "@/app/components/features/ArtworkThumbnail.tsx";
-import FavoriteArtwork from "@/app/components/features/FavoriteArtwork.tsx";
-import ArtistAbout from "@/app/components/features/ArtistAbout.tsx";
-import MyArtworks from "@/app/components/features/MyArtworks.tsx";
+import Navigation from "@/app/components/nav/navigation.tsx";
+import "@/app/components/ui/artist_page_style.css";
+import FollowSubscribe from "@/app/components/features/FollowSubscribe.tsx";
+import ArtworkThumbnail from "@/app/components/features/artist-page/ArtworkThumbnail.tsx";
+import FavoriteArtwork from "@/app/components/features/artist-page/FavoriteArtwork.tsx";
+import ArtistAbout from "@/app/components/features/artist-page/ArtistAbout.tsx";
+import MyArtworks from "@/app/components/features/artist-page/MyArtworks.tsx";
 
 type ArtistDetail = {
   id: number;

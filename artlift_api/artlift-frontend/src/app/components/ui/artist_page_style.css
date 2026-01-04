@@ -25,3 +25,33 @@ margin-top: 30px;
   border: 2px solid #c860fc;
   color: #252525;
 }
+
+
+
+
+.artist-artworks-container {
+
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+}
+.artist-artworks-container::-webkit-scrollbar {
+  display: none;
+}
+
+.artist-cards {
+  min-width: 250px;
+  min-height: 200px;
+  scroll-snap-align: start;
+  border-radius: 16px;
+  transition: background-color 0.3s ease;
+  object-fit: cover;
+}
+
+.artist-cards img {
+  border-radius: 16px;
+}
+.artist-cards img:hover {
+  border: 1px solid #c860fc;
+}
+
