@@ -3,7 +3,7 @@ from .models import User, APIKey
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('userID','username', 'name', 'email', )
+    list_display = ('username','email')
 
 @admin.register(APIKey)
 class APIKeyAdmin(admin.ModelAdmin):

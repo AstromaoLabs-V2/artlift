@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from datetime import timedelta
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -29,7 +30,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+API_KEY = os.getenv("NEXT_PUBLIC_API_KEY")
 
+AUTH_USER_MODEL = "artlift.User"
 # Application definition
 
 INSTALLED_APPS = [
@@ -56,25 +59,41 @@ MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', #this is cors midware
 ]
 
-REST_FRAMEWORK = {
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-}
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework_simplejwt.authentication.JWTAuthentication',
+#     ),
+# }
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
 ]
 
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': (
-#         'artworks.auth.ApiKeyAuthentication',   # custom auth class
-#     ),
-#     'DEFAULT_PERMISSION_CLASSES': (
-#         'rest_framework.permissions.IsAuthenticated',
-#     ),
-# }
+CORS_ALLOW_HEADERS = [
+    'content-type',
+    'x-api-key',
+]
 
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ), # This is to make sure that all endpoints are protected by default 
+}
+
+# Simple JWT settings
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "ROTATE_REFRESH_TOKENS": True, 
+    "BLACKLIST_AFTER_ROTATION": True, 
+    "SIGNING_KEY": SECRET_KEY,
+    "ALGORITHM": "HS256", 
+}
 
 ROOT_URLCONF = 'artlift_api.urls'
 
