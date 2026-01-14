@@ -23,8 +23,8 @@ load_dotenv(BASE_DIR / ".env")
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-!a)jet_@*xurbxh-y3-lq%s_6!2i%n78=5a3302sc*#cs43xsm'
-
+# SECRET_KEY = 'django-insecure-!a)jet_@*xurbxh-y3-lq%s_6!2i%n78=5a3302sc*#cs43xsm'
+SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -67,11 +67,13 @@ MIDDLEWARE = [
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
 
 CORS_ALLOW_HEADERS = [
     'content-type',
     'x-api-key',
+    'authorization',
 ]
 
 
@@ -81,12 +83,13 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
+        #  'rest_framework.permissions.AllowAny',
     ), # This is to make sure that all endpoints are protected by default 
 }
 
 # Simple JWT settings
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=25),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
     "ROTATE_REFRESH_TOKENS": True, 
