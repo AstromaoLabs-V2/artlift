@@ -50,3 +50,45 @@ class Artwork(models.Model):
 
     def __self__(self):
         return self.title
+    
+class ArtworkDetails(models.Model):
+    artwork = models.OneToOneField(Artwork, on_delete=models.CASCADE, related_name="details")
+    about = models.TextField(blank=True)
+    mood = models.CharField(max_length=255, blank=True)
+    medium = models.CharField(max_length=255, blank=True)
+    subject = models.CharField(max_length=255, blank=True)
+    art_styles = models.CharField(max_length=255, blank=True)
+    year_created = models.IntegerField(blank=True)
+    
+    def __self__(self):
+        return self.subject
+    
+
+class Follow(models.Model):
+    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="following")
+    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followers")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("follower", "following") #this is a test i've read this from django meta options
+
+    def __str__(self): 
+        return f"{self.followers} → {self.following}"
+    
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE, related_name="comments")
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    # this is for threaded reply. i'll try this before the comment like -kai
+    parent = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name="replies"
+    )
+
+    def __str__(self):
+        return f"{self.user} commented on {self.artwork}"

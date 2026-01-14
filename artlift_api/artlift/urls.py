@@ -1,7 +1,7 @@
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from django.urls import path
-from .views import ArtistDetailView, ArtistListView, UserDetailView, UserListCreateView, APIKeyCreate, APIKeyList, APIKeyDetail, ArtworkListView, ArtworkDetailView
+from .views import ArtistDetailView, ArtistListView, FollowView, UserDetailView, UserFollowersView, UserFollowingView, UserListCreateView, APIKeyCreate, APIKeyList, APIKeyDetail, ArtworkListView, ArtworkDetailView, DiscoverView
 
 urlpatterns = [
     path("keys/", APIKeyList.as_view(), name="key-list"),
@@ -18,6 +18,11 @@ urlpatterns = [
     path("artworks/", ArtworkListView.as_view(), name="artwork-list"),
     path("artworks/<int:pk>/", ArtworkDetailView.as_view(), name="artwork-detail"),
 
+    path("discover/", DiscoverView.as_view(), name="discover"),
+
+    path("user/<int:pk>/followers/",UserFollowersView.as_view(), name="followers"),
+    path("user/<int:pk>/following/",UserFollowingView.as_view(), name="following"),
+    path("follow/", FollowView.as_view(), name="follow"),
 ]
 
 
