@@ -13,8 +13,8 @@ import mimetypes
 
 from supabase import create_client, Client
 
-from .models import Artist, Follow, User, APIKey, Artwork
-from .serializers import ArtistSerializer, FollowerSerializer, FollowingSerializer, UserSerializer, APIKeySerializer, ArtworkSerializer
+from .models import Artist, Follow, Like, User, APIKey, Artwork
+from .serializers import ArtistSerializer, FollowerSerializer, FollowingSerializer, LikeSerializer, UserSerializer, APIKeySerializer, ArtworkSerializer
 from .permissions import HasAPIKey
 
 #views for APIKeys. feel free to ask me. -kai
@@ -240,6 +240,7 @@ class UserFollowingView(APIView):
         return Response(serializer.data)
 
 class FollowView(APIView):
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
         follower = request.user
@@ -281,3 +282,49 @@ class FollowView(APIView):
             return Response({"message": f"You unfollowed {following.username}"}, status=status.HTTP_200_OK)
         except Follow.DoesNotExist:
             return Response({"message": "You are not following this user"}, status=status.HTTP_400_BAD_REQUEST)
+        
+class LikesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        artwork = Artwork.objects.get(pk=pk)
+        likes = Like.objects.filter(artwork=artwork).select_related('user', 'artwork')
+
+        serializer = LikeSerializer(likes, many=True, context={'request': request, 'artwork': artwork})
+        user_liked = likes.filter(user=request.user).exists()
+        likes_count = likes.count()
+        # return Response(serializer.data)
+        
+        return Response({
+            "logged_in_user": {
+                "id": request.user.id,
+                "username": request.user.username,
+                "email": request.user.email
+            },
+            "likes": serializer.data,
+            "user_liked": user_liked,
+            "likes_count": likes_count,
+        })
+
+class LikeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        user = request.user
+        artwork_id = request.data.get('artwork_id')  
+
+        if not artwork_id:
+            return Response({"error": "artwork_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            artwork = Artwork.objects.get(pk=artwork_id)
+        except Artwork.DoesNotExist:
+            return Response({"error": "Artwork not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        # this is unlike testing. took too much time here HAHA -kai
+        like, created = Like.objects.get_or_create(user=user, artwork=artwork)
+        if not created:
+            like.delete()
+            return Response({"message": f"You unliked {artwork.title}"}, status=200)
+
+        return Response({"message": f"You liked {artwork.title}"}, status=201)
