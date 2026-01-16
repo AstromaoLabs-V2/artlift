@@ -31,13 +31,13 @@ class Artist(models.Model):
     about = models.TextField(blank=True)
     img = models.URLField(blank=True)
     bg = models.URLField(blank=True)
-    accept_commisions = models.BooleanField(True)
+    accept_commisions = models.BooleanField(default=True)
     website_URL = models.TextField(blank=True)
     social_links = models.TextField(blank=True)
-    is_verified = models.BooleanField(False)
+    is_verified = models.BooleanField(default=False)
 
     def __self__(self):
-        return self.last_name
+         return f"{self.user.username} - Artist"
 
 class Artwork(models.Model):
     artist = models.ForeignKey(Artist, related_name="artworks", on_delete=models.CASCADE)
