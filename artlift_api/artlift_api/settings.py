@@ -76,6 +76,7 @@ CORS_ALLOW_HEADERS = [
     'authorization',
 ]
 
+AUTH_USER_MODEL = "artlift.User"
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -84,7 +85,7 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
         #  'rest_framework.permissions.AllowAny',
-    ), # This is to make sure that all endpoints are protected by default 
+    ), # this is to make sure that all endpoints are protected by default -kai
 }
 
 # Simple JWT settings

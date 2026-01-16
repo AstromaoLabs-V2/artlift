@@ -13,8 +13,8 @@ import mimetypes
 
 from supabase import create_client, Client
 
-from .models import Artist, Follow, Like, User, APIKey, Artwork
-from .serializers import ArtistSerializer, FollowerSerializer, FollowingSerializer, LikeSerializer, UserSerializer, APIKeySerializer, ArtworkSerializer
+from .models import Artist, Follow, Like, User, APIKey, Artwork, Comment
+from .serializers import ArtistSerializer, CommentCreateSerializer, CommentSerializer, FollowerSerializer, FollowingSerializer, LikeSerializer, UserSerializer, APIKeySerializer, ArtworkSerializer
 from .permissions import HasAPIKey
 
 #views for APIKeys. feel free to ask me. -kai
@@ -56,41 +56,75 @@ class APIKeyDetail(APIView):
         except APIKey.DoesNotExist:
             return Response({"error": "API key not found"}, status=status.HTTP_404_NOT_FOUND)
 
-
-class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all().order_by('-joined_date')
-    serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated]
-
-    def perform_create(self, serializer):
-        serializer.save()
-
-
-# This is for create and read
 class UserListCreateView(generics.ListCreateAPIView):
-    queryset = User.objects.all().order_by("-joined_date")
-    serializer_class = UserSerializer
-    # permission_classes = [IsAuthenticated] //can be switched here
-    authentication_classes = [JWTAuthentication]
-    # permission_classes = [HasAPIKey]
+    permission_classes = [AllowAny]
 
-    # def get(self, request):
-    #     return Response({"status": "ok"})
+    def get(self, request):
+        users = User.objects.all()
+        serializer = UserSerializer(users, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response(UserSerializer(user).data, status=201)
+        return Response(serializer.errors, status=400)
 
-
-# This is for read, update and delete
-class UserDetailView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class UserDetailView(APIView):
     permission_classes = [IsAuthenticated]
 
+    def get(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+    
+    def patch(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        serializer = UserSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response(UserSerializer(user).data)
+        return Response(serializer.errors, status=400)
+
+    def delete(self, request, pk):
+        user = get_object_or_404(User, pk=pk)
+        user.delete()
+        return Response(status=204)
+        
 class ArtistListView(APIView):
 
-    permission_classes = [HasAPIKey]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
         artists = Artist.objects.all()
         return Response(ArtistSerializer(artists, many=True).data)
+    
+class ArtistCreateView(APIView):
+
+    permission_classes = [IsAuthenticated]  
+
+    def post(self, request):
+        img_file = request.FILES.get("file")
+        bg_file = request.FILES.get("file2")
+        
+        user=request.user
+
+        if hasattr(user, "artist"):
+            return Response({"detail": "Artist profile already exists."}, status=status.HTTP_400_BAD_REQUEST)
+
+        img_url = upload_to_supabase(img_file) if img_file else ""
+        bg_url = upload_to_supabase(bg_file) if bg_file else ""
+
+        artist = Artist.objects.create(
+            user = user,
+            img = img_url,
+            bg = bg_url
+        )
+
+        serializer = ArtistSerializer(artist)
+        return Response(serializer.data, status=201)
+
 
 class ArtistDetailView(APIView):
 
@@ -100,25 +134,37 @@ class ArtistDetailView(APIView):
         artist = get_object_or_404(Artist, pk=pk)
         return Response(ArtistSerializer(artist).data)
     
-# class ArtworkListView(APIView):
-#     authentication_classes = [JWTAuthentication]
-#     permission_classes = [IsAuthenticated]
-#     # permission_classes = [HasAPIKey]
-#     def get(self, request):
-#         qs = Artwork.objects.filter(is_active=True)
-#         return Response(ArtworkSerializer(qs, many=True).data)
+    def patch(self, request, pk):
+        artist = get_object_or_404(Artist, pk=pk)
 
-#     def post(self, request):
-#         print("USER:", request.user)
-#         print("TYPE:", type(request.user))
-#         artist, _ = Artist.objects.get_or_create(user=request.user)
+        img_file = request.FILES.get('img')
+        bg_file = request.FILES.get('bg')
 
-#         serializer = ArtworkSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save(artist=artist)
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        data = request.data.copy()
 
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if img_file:
+            data['img'] = upload_to_supabase(img_file)
+
+        if bg_file:
+            data['bg'] = upload_to_supabase(bg_file)
+
+        serializer = ArtistSerializer(artist, data=data, partial=True)
+     
+
+        # serializer = ArtistSerializer(artist, data=request.data, partial=True)
+        
+        if serializer.is_valid():
+            artist = serializer.save()
+    
+            artist.save()
+            return Response(ArtistSerializer(artist).data, status=200)
+        return Response(serializer.errors, status=400)
+    
+    def delete(self, request, pk):
+        artist = get_object_or_404(Artist, pk=pk)
+        artist.delete()
+        return Response(status=204)
+    
 class ArtworkListView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     # permission_classes = [IsAuthenticated]
@@ -129,19 +175,16 @@ class ArtworkListView(APIView):
         return Response(ArtworkSerializer(qs, many=True).data)
 
     def post(self, request):
-        file = request.FILES.get("file")  # binary from form
+        file = request.FILES.get("file")  
         title = request.data.get("title")
-        size = request.data.get("size", "")  # optional
-
+        size = request.data.get("size", "") 
         if not file or not title:
             return Response({"error": "Title and file are required"}, status=400)
 
         artist, _ = Artist.objects.get_or_create(user=request.user)
 
-        # Upload to Supabase
-        img_url = upload_to_supabase(file)  # returns URL
+        img_url = upload_to_supabase(file) 
 
-        # Save Artwork
         artwork = Artwork.objects.create(
             artist=artist,
             title=title,
@@ -203,7 +246,7 @@ class DiscoverView(APIView):
             "artworks" : artworks
         })
     
-
+#this supabase for the DB conn -kai
 supabase: Client = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
 
 def upload_to_supabase(file):
@@ -215,6 +258,7 @@ def upload_to_supabase(file):
         file=file.read(),
         file_options={"content-type": content_type},
     )
+    #i forgot to make it media for  general rather than artworks folder HAHA
 
     public_url = supabase.storage.from_("artworks").get_public_url(filename)
     return public_url
@@ -319,7 +363,7 @@ class LikeView(APIView):
         try:
             artwork = Artwork.objects.get(pk=artwork_id)
         except Artwork.DoesNotExist:
-            return Response({"error": "Artwork not found"}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"error": "Artwork not found"}, status=404)
 
         # this is unlike testing. took too much time here HAHA -kai
         like, created = Like.objects.get_or_create(user=user, artwork=artwork)
@@ -328,3 +372,59 @@ class LikeView(APIView):
             return Response({"message": f"You unliked {artwork.title}"}, status=200)
 
         return Response({"message": f"You liked {artwork.title}"}, status=201)
+
+class ArtworkCommentList(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, artwork_id):
+        comments = Comment.objects.filter(
+            artwork_id=artwork_id,
+            parent__isnull=True
+        ).order_by("-created_at")
+
+        return Response(CommentSerializer(comments, many=True).data)
+
+class ArtworkCommentCreate(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, artwork_id):
+        artwork = get_object_or_404(Artwork, pk=artwork_id)
+
+        serializer = CommentCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            comment = serializer.save(
+                user=request.user,
+                artwork=artwork
+            )
+            return Response(CommentSerializer(comment).data, status=201)
+
+        return Response(serializer.errors, status=400)
+    
+class CommentDelete(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
+
+        if comment.user != request.user and not request.user.is_staff:
+            return Response({"detail": "Forbidden"}, status=403)
+
+        comment.delete()
+        return Response(status=204)
+    
+class CommentReplyCreate(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, comment_id):
+        parent = get_object_or_404(Comment, pk=comment_id)
+
+        serializer = CommentCreateSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(
+                user = request.user,
+                artwork = parent.artwork,
+                parent = parent,
+            )
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
