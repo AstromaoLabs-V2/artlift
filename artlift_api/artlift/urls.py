@@ -1,15 +1,19 @@
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from django.urls import path
-from .views import ArtistDetailView, ArtistListView, ArtworkCommentCreate, ArtworkCommentList, CommentDelete, CommentReplyCreate, FollowView, LikeView, LikesView, UserDetailView, UserFollowersView, UserFollowingView, UserListCreateView, APIKeyCreate, APIKeyList, APIKeyDetail, ArtistCreateView, ArtworkListView, ArtworkDetailView, DiscoverView  
+from .views import ArtistDetailView, ArtistListView, ArtworkCommentCreate, ArtworkCommentList, CommentDelete, CommentReplyCreate, FollowView, LikeView, LikesView, LogoutView, UserDetailView, UserFollowersView, UserFollowingView, UserListCreateView, APIKeyCreate, APIKeyList, APIKeyDetail, ArtistCreateView, ArtworkListView, ArtworkDetailView, DiscoverView, LoginView
 
 urlpatterns = [
     path("keys/", APIKeyList.as_view(), name="key-list"),
     path("keys/create/", APIKeyCreate.as_view(), name="key-create"),
     path("keys/<str:key>/", APIKeyDetail.as_view, name="key-detail"),
 
-    path("login/", TokenObtainPairView.as_view(), name="login"),
-    path("users/", UserListCreateView.as_view(), name="users"),
+    # path("login/", TokenObtainPairView.as_view(), name="login"),
+    path("signup/", UserListCreateView.as_view(), name="users"),
+    path("login/", LoginView.as_view(), name="login"),
+    path("logout/", LogoutView.as_view(), name="logout"),
+    
+    # path("users/", UserListCreateView.as_view(), name="users"), #made this to signup -kai
     path("users/<int:pk>/", UserDetailView.as_view(), name="user-detail"),
     
     path("artists/", ArtistListView.as_view(), name="artist-list"),
@@ -17,7 +21,7 @@ urlpatterns = [
     path("artist/<int:pk>/", ArtistDetailView.as_view(), name="artist-detail"),
 
     path("artworks/", ArtworkListView.as_view(), name="artwork-list"),
-    path("artwork/<int:pk>/", ArtworkDetailView.as_view(), name="artwork-detail"),
+    path("artwork/<int:pk>/", ArtworkDetailView.as_view(), name="artwork-detail"), #here you will get artwork details also methods: GET specific artwork by id, edit, delete 
 
     path("discover/", DiscoverView.as_view(), name="discover"),
 
