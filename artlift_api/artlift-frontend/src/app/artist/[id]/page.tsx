@@ -5,25 +5,19 @@ import { useRouter } from "next/navigation";
 import {getArtist} from "@/app/lib/Artists/[id]/getArtists";
 import Navigation from "@/app/components/nav/navigation";
 import FollowSubscribe from "@/app/components/features/FollowSubscribe";
+import ArtistEdit from "@/app/components/editForm/ArtistEdit";
+import { Artist } from "@/app/types/props";
 
-
-interface Artist {
-  first_name: string;
-  last_name: string;
-  bg: string;
-  img:string;
-  about:string;
-
-}
 
 export default function ArtistPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 
 }) {
-  const { id } = React.use(params);
+  const { id } = params;
   const [artist, setArtist] = useState<Artist | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -61,6 +55,11 @@ export default function ArtistPage({
 
   <h2>About</h2>
   <p>{artist.about}</p>
+
+  {token &&(
+        <ArtistEdit artist={artist} token={token} onUpdated={setArtist} />
+
+      )}
 
 
     </>
