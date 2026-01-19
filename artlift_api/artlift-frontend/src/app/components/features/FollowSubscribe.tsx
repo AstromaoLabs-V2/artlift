@@ -2,7 +2,7 @@ import "../ui/subscribe_button.css";
 import Image from "next/image";
 
 type Props ={
-  artistIcon:string;
+  artistIcon?:string;
   artistName:string;
 }
 
@@ -10,7 +10,7 @@ export default function FollowSubscribe({artistIcon, artistName}:Props){
   return(
     <>
     <div className="icon-name">
-      <Image src={artistIcon} width={60} height={60} alt="follow icon" />
+      <img src={artistIcon} width={60} height={60} alt="follow icon" />
       <h3>{artistName}</h3>
     </div>
 
