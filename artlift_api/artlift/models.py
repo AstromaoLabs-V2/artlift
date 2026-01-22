@@ -101,3 +101,47 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"{self.user} commented on {self.artwork}"
+    
+class CartItem(models.Model):
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE, related_name="cart_items")
+    artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE)
+    quantity = models.PositiveBigIntegerField(default=1)
+    added_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('buyer', 'artwork')
+
+    def __str__(self):
+        return f"{self.buyer.username} - {self.artwork.title}"
+    
+    
+class Order(models.Model):
+    stripe_session_id = models.CharField(max_length=255) #i'll try USD first as currency as in documentation
+    buyer = models.ForeignKey(User, on_delete=models.CASCADE)
+    artwork = models.ForeignKey(Artwork, on_delete=models.CASCADE)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    artist_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
+    platform_fee = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True) #i don't know how to estimate for this but i've seen like this from upwork.-kai
+    status = models.CharField(max_length=50, choices=[
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+        ('failed', 'Failed'),
+        ('refunded', 'Refunded'),
+        ('canceled', 'Canceled')
+    ],
+    default='pending'
+    ) #will be fixed status for the mean time -kai
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Order {self.id} - {self.buyer.username}"
+
+class OrderItem(models.Model):
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name="items")
+    artwork = models.ForeignKey(Artwork, on_delete=models.SET_NULL, null=True)
+    artist = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="sold_items")
+    price = models.DecimalField(max_digits=10, decimal_places=2) 
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.artwork.title} (x{self.quantity})"

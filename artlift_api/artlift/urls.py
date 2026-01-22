@@ -1,7 +1,7 @@
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 from django.urls import path
-from .views import ArtistDetailView, ArtistListView, ArtworkCommentCreate, ArtworkCommentList, CommentDelete, CommentReplyCreate, FollowView, LikeView, LikesView, LogoutView, UserDetailView, UserFollowersView, UserFollowingView, UserListCreateView, APIKeyCreate, APIKeyList, APIKeyDetail, ArtistCreateView, ArtworkListView, ArtworkDetailView, DiscoverView, LoginView
+from .views import ArtistDetailView, ArtistListView, ArtworkCommentCreate, ArtworkCommentList, CommentDelete, CommentReplyCreate, FollowView, LikeView, LikesView, UserDetailView, UserFollowersView, UserFollowingView, UserListCreateView, APIKeyCreate, APIKeyList, APIKeyDetail, ArtistCreateView, ArtworkListView, ArtworkDetailView, DiscoverView, LoginView, LogoutView, AddToCartView, CartListView
 
 urlpatterns = [
     path("keys/", APIKeyList.as_view(), name="key-list"),
@@ -39,6 +39,9 @@ urlpatterns = [
     path("artwork/<int:artwork_id>/comments/create/", ArtworkCommentCreate.as_view()),
     path("comments/<int:pk>/delete/", CommentDelete.as_view()),
     path("comments/<int:comment_id>/reply/", CommentReplyCreate.as_view()),
+
+    path("cart/add/", AddToCartView.as_view(), name="add-cart"),
+    path("cart/", CartListView.as_view(), name="cart"),
 ]
 
 

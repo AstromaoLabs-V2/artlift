@@ -1,20 +1,19 @@
 import os
-from rest_framework import viewsets, generics, permissions
+from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
-from rest_framework.generics import RetrieveAPIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import MultiPartParser, FormParser
 import uuid
 import mimetypes
 
 from supabase import create_client, Client
 
-from .models import Artist, Follow, Like, User, APIKey, Artwork, Comment
-from .serializers import ArtistSerializer, CommentCreateSerializer, CommentSerializer, FollowerSerializer, FollowingSerializer, LikeSerializer, UserSerializer, APIKeySerializer, ArtworkSerializer
+from .models import Artist, CartItem, Follow, Like, User, APIKey, Artwork, Comment
+from .serializers import ArtistSerializer, CartSerializer, CommentCreateSerializer, CommentSerializer, FollowerSerializer, FollowingSerializer, LikeSerializer, UserSerializer, APIKeySerializer, ArtworkSerializer, LoginSerializer, LogoutSerializer
 from .permissions import HasAPIKey
 
 #views for APIKeys. feel free to ask me. -kai
@@ -55,6 +54,32 @@ class APIKeyDetail(APIView):
             return Response({"message": "API key deleted"}, status=status.HTTP_204_NO_CONTENT)
         except APIKey.DoesNotExist:
             return Response({"error": "API key not found"}, status=status.HTTP_404_NOT_FOUND)
+
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+
+            refresh = RefreshToken.for_user(user)
+
+            return Response({
+                "user": UserSerializer(user).data,
+                "refresh": str(refresh),
+                "access": str(refresh.access_token),
+            })
+        return Response(serializer.errors, status=400)
+
+class LogoutView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = LogoutSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({"detail": "Logged out successfully"}, status=204)
 
 class UserListCreateView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
@@ -428,3 +453,23 @@ class CommentReplyCreate(APIView):
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
+class AddToCartView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = CartSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        cart = serializer.save() 
+        return Response(CartSerializer(cart).data, status=201)
+
+class CartListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        cart = CartItem.objects.filter(
+            buyer=user,
+        ).order_by("-added_at")
+
+        return Response(CartSerializer(cart, many=True).data)
