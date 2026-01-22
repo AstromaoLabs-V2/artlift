@@ -22,7 +22,7 @@ export default function ArtistPage({
 
   useEffect(() => {
     const token = localStorage.getItem("access_token");
-
+    setToken(token);
     if (!token) {
       router.push("/login");
       return; 
