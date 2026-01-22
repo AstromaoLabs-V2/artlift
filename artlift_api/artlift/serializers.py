@@ -1,7 +1,8 @@
 from rest_framework import serializers
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
+from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 
-from .models import User, Artist, Artwork, APIKey, ArtworkDetails, Follow, Like, Comment
+from .models import CartItem, Order, User, Artist, Artwork, APIKey, ArtworkDetails, Follow, Like, Comment
 
 class APIKeySerializer(serializers.ModelSerializer):
     class Meta:
@@ -32,6 +33,36 @@ class UserSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        username = data.get("username")
+        password = data.get("password")
+
+        if username and password:
+            user = authenticate(username=username, password=password)
+            if not user:
+                raise serializers.ValidationError("Invalid credentials")
+            data["user"] = user
+            return data
+        else:
+            raise serializers.ValidationError("Must include username and password")
+        
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()
+
+    def validate(self, attrs):
+        self.token = attrs['refresh']
+        return attrs
+
+    def save(self, **kwargs):
+        try:
+            RefreshToken(self.token).blacklist()
+        except TokenError:
+            raise serializers.ValidationError("Invalid token or token already blacklisted")
+        
 class ArtistSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artist
@@ -130,3 +161,22 @@ class CommentCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ["text", "parent"]
+
+class CartSerializer(serializers.ModelSerializer):
+    # buyer = serializers.HiddenField(default=serializers.CurrentUserDefault())
+    username = serializers.SerializerMethodField()
+
+    class Meta:
+        model = CartItem
+        fields = ['id', 'buyer', 'username', 'artwork', 'quantity']
+    
+    def get_username(self, obj):
+        return obj.buyer.username
+
+
+
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Order
+        fields = "__all__" #try all first

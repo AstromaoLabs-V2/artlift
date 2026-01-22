@@ -90,7 +90,7 @@ REST_FRAMEWORK = {
 
 # Simple JWT settings
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=25),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1), #this will be configured when ready for prod -kai
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
     "ROTATE_REFRESH_TOKENS": True, 
@@ -98,6 +98,32 @@ SIMPLE_JWT = {
     "SIGNING_KEY": SECRET_KEY,
     "ALGORITHM": "HS256", 
 }
+
+# Settings for Production
+PAYMENT_VARIANTS = {
+    'stripe': (
+        'payments.stripe.StripeProviderV3',
+        {
+            'api_key': 'sk_test_123456',
+            'use_token': True,
+            'endpoint_secret': 'whsec_123456',
+            'secure_endpoint': True
+        }
+    )
+}
+# Settings for Development
+PAYMENT_VARIANTS = {
+    'stripe': (
+        'payments.stripe.StripeProviderV3',
+        {
+            'api_key': 'sk_test_123456',
+            'use_token': True,
+            'secure_endpoint': False
+        }
+    )
+}
+
+
 
 ROOT_URLCONF = 'artlift_api.urls'
 
