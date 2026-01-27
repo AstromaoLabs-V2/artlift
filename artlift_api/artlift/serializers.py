@@ -64,10 +64,30 @@ class LogoutSerializer(serializers.Serializer):
             raise serializers.ValidationError("Invalid token or token already blacklisted")
         
 class ArtistSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(source="user.email", read_only=True) 
+    followers_count = serializers.SerializerMethodField()
+
     class Meta:
         model = Artist
-        fields = '__all__'
+        fields =  [
+            "id",
+            "email",          
+            "first_name",
+            "last_name",
+            "address",
+            "about",
+            "img",
+            "bg",
+            "accept_commisions",
+            "website_URL",
+            "social_links",
+            "is_verified",
+            "followers_count",
+        ]
         read_only_fields = ("artist",)
+    
+    def get_followers_count(self, obj):
+         return obj.user.followers.count()
 
 class ArtworkDetailsSerializer(serializers.ModelSerializer):
     class Meta:

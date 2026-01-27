@@ -1,7 +1,8 @@
-from rest_framework_simplejwt.views import TokenObtainPairView
+
 
 from django.urls import path
-from .views import ArtistDetailView, ArtistListView, ArtworkCommentCreate, ArtworkCommentList, CommentDelete, CommentReplyCreate, FollowView, LikeView, LikesView, UserDetailView, UserFollowersView, UserFollowingView, UserListCreateView, APIKeyCreate, APIKeyList, APIKeyDetail, ArtistCreateView, ArtworkListView, ArtworkDetailView, DiscoverView, LoginView, LogoutView, AddToCartView, CartListView
+from .views import ArtistDetailView, ArtistListView, ArtworkCommentCreate, ArtworkCommentList, CommentDelete, CommentReplyCreate, CurrentArtistView, FollowView, LikeView, LikesView, UserDetailView, UserFollowersView, UserFollowingView, UserListCreateView, APIKeyCreate, APIKeyList, APIKeyDetail, ArtistCreateView, ArtworkListView, ArtworkDetailView, DiscoverView, LoginView, LogoutView, AddToCartView, CartListView, CurrentUserView
+from rest_framework_simplejwt.views import TokenVerifyView
 
 urlpatterns = [
     path("keys/", APIKeyList.as_view(), name="key-list"),
@@ -12,9 +13,12 @@ urlpatterns = [
     path("signup/", UserListCreateView.as_view(), name="users"),
     path("login/", LoginView.as_view(), name="login"),
     path("logout/", LogoutView.as_view(), name="logout"),
+    path("auth/verify/", TokenVerifyView.as_view()),
     
     # path("users/", UserListCreateView.as_view(), name="users"), #made this to signup -kai
     path("users/<int:pk>/", UserDetailView.as_view(), name="user-detail"),
+    path("current_user/", CurrentUserView.as_view(), name="current-user"),
+    path('artist/me/', CurrentArtistView.as_view(), name='current-artist'), 
     
     path("artists/", ArtistListView.as_view(), name="artist-list"),
     path("artist/create/", ArtistCreateView.as_view(), name="artist-create"),

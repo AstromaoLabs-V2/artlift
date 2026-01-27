@@ -1,4 +1,4 @@
-import { Artist } from "@/app/types/props";
+import { Artist } from "@/types/props";
   
 export const deleteArtist = async (id:number, token:string) => {
     try {

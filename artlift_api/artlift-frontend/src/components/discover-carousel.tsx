@@ -1,4 +1,4 @@
-import { Artist, Artwork } from "../app/types/props";
+import { Artist, Artwork } from "../types/props";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
 import {

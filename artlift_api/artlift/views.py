@@ -64,27 +64,41 @@ class LoginView(APIView):
             user = serializer.validated_data['user']
 
             refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
 
-            return Response({
+            response = Response({
                 "user": UserSerializer(user).data,
                 "refresh": str(refresh),
-                "access": str(refresh.access_token),
+                "access": access_token,  
             })
+
+            
+            response.set_cookie(
+            key="access_token",
+            value=str(refresh.access_token),
+            httponly=True,
+            samesite="lax",
+            secure=False,   #to be True in prod -kai
+            domain="localhost", #to edited in prod -kai     
+            max_age=3600,          #will be edited in prod -kai
+            )
+
+            return response
+
         return Response(serializer.errors, status=400)
 
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        serializer = LogoutSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response({"detail": "Logged out successfully"}, status=204)
+        response = Response({"detail": "Logged out successfully"})
+        response.delete_cookie("access_token", domain="localhost")
+        return response
 
 class UserListCreateView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
 
-    def get(self, request):
+    def get(self, request): #to be removed this should be for admin only
         users = User.objects.all()
         serializer = UserSerializer(users, many=True)
         return Response(serializer.data)
@@ -116,7 +130,43 @@ class UserDetailView(APIView):
         user = get_object_or_404(User, pk=pk)
         user.delete()
         return Response(status=204)
+
+class CurrentUserView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response(
+            {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email,
+            "artist": {
+                "id": user.artist.id,
+                "img": getattr(user.artist, "img", ""),  
+                "bg": getattr(user.artist, "bg", ""),    
+            } if hasattr(user, "artist") else None
+        }
+        )
+
+class CurrentArtistView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
         
+        if not hasattr(user, "artist"):
+            return Response(
+                {"detail": "Artist profile not found for this user."}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        artist = user.artist
+        data = ArtistSerializer(artist).data
+
+        data['email'] = user.email
+        return Response(data, status=status.HTTP_200_OK)
+
 class ArtistListView(APIView):
 
     permission_classes = [IsAuthenticated]
@@ -162,6 +212,12 @@ class ArtistDetailView(APIView):
     def patch(self, request, pk):
         artist = get_object_or_404(Artist, pk=pk)
 
+        if artist.user != request.user:
+            return Response(
+                {"detail": "You are not allowed to edit this profile."},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
         img_file = request.FILES.get('img')
         bg_file = request.FILES.get('bg')
 
@@ -172,18 +228,32 @@ class ArtistDetailView(APIView):
 
         if bg_file:
             data['bg'] = upload_to_supabase(bg_file)
+        
+        new_email = data.pop('email', None)
+
+        if new_email and new_email != artist.user.email:
+            if isinstance(new_email, list):
+                new_email = new_email[0]
+            if User.objects.filter(email=new_email).exclude(id=artist.user.id).exists():
+                return Response(
+            {"email": "This email is already in use"}, 
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+            artist.user.email = new_email
+            artist.user.save()
 
         serializer = ArtistSerializer(artist, data=data, partial=True)
-     
-
-        # serializer = ArtistSerializer(artist, data=request.data, partial=True)
         
         if serializer.is_valid():
-            artist = serializer.save()
+            serializer.save()
+            
+            response_data = ArtistSerializer(artist).data
+            response_data['email'] = artist.user.email
+            
+            return Response(response_data, status=status.HTTP_200_OK)
     
-            artist.save()
-            return Response(ArtistSerializer(artist).data, status=200)
-        return Response(serializer.errors, status=400)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, pk):
         artist = get_object_or_404(Artist, pk=pk)
