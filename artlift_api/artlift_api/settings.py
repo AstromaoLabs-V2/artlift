@@ -49,6 +49,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', #this is cors midware
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -56,7 +57,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware', #this is cors midware
 ]
 
 # REST_FRAMEWORK = {
@@ -64,10 +64,13 @@ MIDDLEWARE = [
 #         'rest_framework_simplejwt.authentication.JWTAuthentication',
 #     ),
 # }
+CORS_ALLOW_CREDENTIALS = True
+
+# CORS_EXPOSE_HEADERS = ["Set-Cookie"]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
+    "http://localhost:3000", # frontend ro edited in prod
+    # "http://127.0.0.1:8000", # backend
 ]
 
 CORS_ALLOW_HEADERS = [
@@ -90,7 +93,7 @@ REST_FRAMEWORK = {
 
 # Simple JWT settings
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=1), #this will be configured when ready for prod -kai
+    "ACCESS_TOKEN_LIFETIME": timedelta(hours=1), #this will be configured when ready for prod -kai
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
     "AUTH_HEADER_TYPES": ("Bearer",),
     "ROTATE_REFRESH_TOKENS": True, 

@@ -8,7 +8,7 @@ import Navigation from "@/app/components/nav/navigation";
 import FollowSubscribe from "@/app/components/features/FollowSubscribe";
 import ArtistForm from "@/app/components/editForm/ArtistEdit";
 import DeleteButton from "@/app/components/DeleteButton";
-import { Artist } from "@/app/types/props";
+import { Artist } from "@/types/props";
 
 export default function ArtistPage() {
   const router = useRouter();

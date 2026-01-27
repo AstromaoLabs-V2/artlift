@@ -5,6 +5,7 @@ import { useTheme } from "next-themes";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import UserDropdown from "../user-dropdown";
 
 export default function NavBar() {
   const pathname = usePathname();
@@ -81,9 +82,11 @@ export default function NavBar() {
               <Moon className="lucide lucide-moon size-4 text-fd-muted-foreground" />
             </button>
           </div>
-          <button className="size-9 rounded-full flex justify-center items-center backdrop-blur-lg bg-background/80">
+          {/* <button className="size-9 rounded-full flex justify-center items-center backdrop-blur-lg bg-background/80">
             <User size={22} />
-          </button>
+
+          </button> */}
+                      <UserDropdown />
         </div>
       </nav>
     </header>

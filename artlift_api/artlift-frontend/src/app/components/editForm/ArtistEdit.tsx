@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Artist } from "@/app/types/props";
+import { Artist } from "@/types/props";
 import { editArtist } from "@/app/lib/Artists/[id]/editArtists";
 import { createArtist } from "@/app/lib/Artists/[id]/postArtists";
 

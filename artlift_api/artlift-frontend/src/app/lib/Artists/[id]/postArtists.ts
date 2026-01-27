@@ -1,4 +1,4 @@
-import { Artist } from "@/app/types/props";
+import { Artist } from "@/types/props";
   
 export const createArtist = async (token:string, body:Partial<Artist>) => {
     try {

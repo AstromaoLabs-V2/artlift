@@ -4,6 +4,10 @@ __pycache__/
 *$py.class
 *.so
 .Python
+.pyc
+*.pyc
+*.pyo
+*.pyd
 
 # Django
 *.log
@@ -15,3 +19,4 @@ staticfiles/
 .next/
 node_modules/
 .env
+venv/
