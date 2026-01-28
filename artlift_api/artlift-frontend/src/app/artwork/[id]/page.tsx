@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Artwork, Artist } from "@/app/types/props";
-import {getArtwork} from "@/app/lib/Artists/[id]/getArtwork";
+import { Artwork, Artist, Comments,CurrentUser } from "@/app/types/props";
+import { getArtwork } from "@/app/lib/Artists/[id]/getArtwork";
 import { getArtist } from "@/app/lib/Artists/[id]/getArtists";
 import { deleteArtwork } from "@/app/lib/Artists/[id]/deleteArtwork";
+import { getComments } from "@/app/lib/Artwork/[id]/comments/ListComments";
 import ArtworkForm from "@/app/components/editForm/ArtworkForm";
 import SnsSystem from "@/app/components/features/SnsSystem";
+import CommentHandle from "@/app/components/commentSection/CommentHandle";
 import Navigation from "@/app/components/nav/navigation";
 import DeleteButton from "@/app/components/DeleteButton";
 import EditButton from "@/app/components/EditButton";
@@ -23,15 +25,26 @@ export default function ArtworkDetailPage() {
   const [editMode, setEditMode] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [isOwner, setIsOwner] = useState(false);
+  const [comments, setComments] = useState<Comments[]>([]);
+
+  //delete for staff
+  //const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+
 
   useEffect(() => {
     // Get token and username from localStorage
     const storedToken = localStorage.getItem("access_token");
-     if (!storedToken) {
+      const username = localStorage.getItem("username");
+      //const is_staff = localStorage.getItem("is_staff") === "true";
+
+    if (!storedToken) {
       router.push("/auth/login");
       return;
     }
-
+    setToken(storedToken);
+    if (username) {
+    //setCurrentUser({ username, is_staff });
+  }
     const fetchData = async () => {
       try {
         // Fetch artwork
@@ -39,18 +52,20 @@ export default function ArtworkDetailPage() {
         setArtwork(artworkData);
 
         //fetch Artist
-        const data = await getArtist(id, storedToken);
+      const data = await getArtist(id, storedToken);
         setArtist(data);
+        console.log("Artist data",data);
+
+        // Fetch comments
+        const commentData = await getComments(id, storedToken);
+        setComments(commentData || []);
 
         // Check if current user is the owner
         const username = localStorage.getItem("username");
         if (data?.user__username === username) {
           setIsOwner(true);
         }
-
-      }
-
-      catch (err: any) {
+      } catch (err: any) {
         if (err.message === "UNAUTHORIZED") {
           router.push("/auth/login");
         } else if (err.message.includes("404")) {
@@ -63,25 +78,34 @@ export default function ArtworkDetailPage() {
       }
     };
     fetchData();
-    setToken(storedToken);
   }, [id, router]);
+
+  const fetchCommentsData = async () => {
+    if(!token) return;
+    const commentData = await getComments(id, token);
+    setComments(commentData);
+  };
 
   const handleDeleteArtwork = async () => {
     if (!artwork || !token) return;
 
-  try {
-        await deleteArtwork(artwork.id, token);
-        router.push("/artwork");
-      } catch (err) {
-        console.error(err);
-        alert("Failed to delete artwork.");
-      }
+    try {
+      await deleteArtwork(artwork.id, token);
+      router.push("/artwork");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete artwork.");
+    }
   };
 
   const handleArtworkUpdated = (updatedArtwork: Artwork) => {
     setArtwork(updatedArtwork);
     setEditMode(false);
   };
+
+ const handleCommentAdded = async () => {
+  await fetchCommentsData();
+};
 
   if (loading) return <p className="text-center py-8">Loading artwork...</p>;
   if (!artwork) return <p className="text-center py-8">Artwork not found.</p>;
@@ -130,7 +154,6 @@ export default function ArtworkDetailPage() {
                     <span className="font-semibold">Status:</span>{" "}
                     {artwork.is_active ? "Active" : "Inactive"}
                   </p>
-            
                 </div>
 
                 {/* Description */}
@@ -144,9 +167,10 @@ export default function ArtworkDetailPage() {
                 )}
 
                 {/* Action Buttons */}
-              
-                  <div className="flex gap-3">
-                    {/*token && isOwner && */ token &&(
+
+                <div className="flex gap-3">
+                  {
+                    /*token && isOwner && */ token && (
                       <>
                         <EditButton
                           onClick={() => setEditMode(!editMode)}
@@ -154,9 +178,9 @@ export default function ArtworkDetailPage() {
                         />
                         <DeleteButton onDelete={handleDeleteArtwork} />
                       </>
-                    )}
-                  </div>
-            
+                    )
+                  }
+                </div>
               </div>
             </div>
 
@@ -178,7 +202,18 @@ export default function ArtworkDetailPage() {
             </div>
           )}
 
-             
+          {/* Comments Section */}
+          {token && (
+            <div className="comment bg-white rounded-lg shadow-lg p-6">
+              <CommentHandle
+                comments={comments}
+                token={token}
+                onCommentAdded={handleCommentAdded}
+                artworkId={artwork.id}
+                /*currentUser={currentUser}*/
+              />
+            </div>
+          )}
         </div>
       </div>
     </>
