@@ -23,10 +23,16 @@ export default function ArtworkDetailPage() {
   const [editMode, setEditMode] = useState(false);
   const [token, setToken] = useState<string | null>(null);
   const [isOwner, setIsOwner] = useState(false);
+  const [comments, setComments] = useState<Comments[]>([]);
+
+  //delete for staff
+  //const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
 
   useEffect(() => {
     // Get token and username from localStorage
     const storedToken = localStorage.getItem("access_token");
+   // const username = localStorage.getItem("username");
+      //const is_staff = localStorage.getItem("is_staff") === "true";
      if (!storedToken) {
       router.push("/auth/login");
       return;
@@ -41,6 +47,10 @@ export default function ArtworkDetailPage() {
         //fetch Artist
         const data = await getArtist(id, storedToken);
         setArtist(data);
+
+          // Fetch comments
+        const commentData = await getComments(id, storedToken);
+        setComments(commentData || []);
 
         // Check if current user is the owner
         const username = localStorage.getItem("username");
@@ -65,6 +75,13 @@ export default function ArtworkDetailPage() {
     fetchData();
     setToken(storedToken);
   }, [id, router]);
+
+   const fetchCommentsData = async () => {
+    if(!token) return;
+    const commentData = await getComments(id, token);
+    setComments(commentData);
+  };
+
 
   const handleDeleteArtwork = async () => {
     if (!artwork || !token) return;
@@ -178,7 +195,18 @@ export default function ArtworkDetailPage() {
             </div>
           )}
 
-             
+            {/* Comments Section */}
+          {token && (
+            <div className="comment bg-white rounded-lg shadow-lg p-6">
+              <CommentHandle
+                comments={comments}
+                token={token}
+                onCommentAdded={handleCommentAdded}
+                artworkId={artwork.id}
+                /*currentUser={currentUser}*/
+              />
+            </div>
+          )}
         </div>
       </div>
     </>
