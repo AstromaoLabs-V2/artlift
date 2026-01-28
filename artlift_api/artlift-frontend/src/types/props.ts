@@ -73,3 +73,18 @@ export interface Errors {
 export interface Error {
   [key: string]: string;
 }
+
+export interface Comments {
+  id: number;
+  user: string;              // username
+  user_img: string;          // artist profile image URL
+  text: string;
+  created_at: string;
+  parent: number | null;     // parent comment id for threaded replies
+  replies: Comments[];       // nested replies
+}
+
+export interface CurrentUser{
+  username: string;
+  is_staff: boolean;
+};
