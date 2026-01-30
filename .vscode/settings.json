@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./artlift_app/artlift_api"
+    ]
+}
