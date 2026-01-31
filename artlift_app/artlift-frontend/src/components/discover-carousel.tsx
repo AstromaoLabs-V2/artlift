@@ -1,3 +1,5 @@
+//this uses "use client" but here it's not since it's not funtioning yet this is initial client components
+//this discovercar... Oh okay. Still server side right? uhm no this is client side
 import { Artist, Artwork } from "../types/props";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
@@ -12,7 +14,7 @@ import {
 interface DiscoverCarouselProps {
   artworks: Artwork[];
 }
-
+//don't have state or events yet so no "use client" here that's why Yes. But still this is client's since its gonna have other function later
 export default function DiscoverCarousel({ artworks }: DiscoverCarouselProps) {
   return (
     <div className="bg-amber-100 text-black space-y-6 p-6">

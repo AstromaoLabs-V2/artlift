@@ -10,7 +10,7 @@ export const metadata: Metadata = constructMetadata({
   title: "Sign In | Artlift",
   description: "Sign in to your account",
   canonical: "/signin",
-});
+}); 
 
 export default async function Signin() {
   const cookieStore = await cookies();

@@ -1,3 +1,5 @@
+//this is server side which functions are server actions to backend
+//this is server side
 export const getDiscover = async () => {
   try {
     const res = await fetch("http://127.0.0.1:8000/discover/", {
