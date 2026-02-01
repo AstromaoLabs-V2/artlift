@@ -26,6 +26,7 @@ export const config = {
   matcher: [
     "/dashboard/:path*", 
     "/artwork/:path*",
-    "/sample/:path*"  
+    "/sample/:path*", 
+    "/artist/:path*"
   ], 
 };

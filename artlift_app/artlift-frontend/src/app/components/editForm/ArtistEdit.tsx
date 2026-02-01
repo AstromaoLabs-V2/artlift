@@ -1,15 +1,14 @@
 import { useState } from "react";
 import { Artist } from "@/types/props";
-import { editArtist } from "@/app/lib/Artists/[id]/editArtists";
-import { createArtist } from "@/app/lib/Artists/[id]/postArtists";
+import { editArtist } from "@/lib/Artists/[id]/artist-artwork";
 
 type Props = {
   artist?: Artist;
-  token: string;
-  mode:"create" | "edit";
+  api_token: string;
+  mode:"edit";
   onUpdated: (artist: Artist) => void;
 };
-export default function ArtistForm({ artist, token, mode, onUpdated }: Props) {
+export default function ArtistForm({ artist, api_token, mode, onUpdated }: Props) {
   const [artistEditForm, setArtistEditForm] = useState<Partial<Artist>>({
     first_name: artist?.first_name ?? "",
     last_name: artist?.last_name ?? "",
@@ -42,15 +41,10 @@ export default function ArtistForm({ artist, token, mode, onUpdated }: Props) {
         if(!artist){
           throw new Error("Artist data is required for edit mode.");
         }
-           const updated = await editArtist(artist.id, token, artistEditForm);
+           const updated = await editArtist(artist.id, api_token, artistEditForm);
       onUpdated(updated);
       alert("Artist updated successfully!");
     } 
-    else{
-      const created = await createArtist(token, artistEditForm);
-      onUpdated(created);
-      alert("Artist created successfully!");
-    }
     }
     catch(error){
       console.error(error);

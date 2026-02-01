@@ -1,20 +1,23 @@
-
-import { getArtist } from "@/lib/Artists/[id]/getArtists";
+import { cookies } from "next/headers";
+import { getArtist} from "@/lib/Artists/[id]/artist-artwork";
 import ArtistClient from "@/components/artists/ArtistClient";
 import { constructMetadata } from "@/types/props";
 
+//export async function generateMetadata({ params }) {
+  //return constructMetadata({
+   // title: "Artist",
+  //  description: "Artist page",
+   // canonical: `/artist/${params.id}`,
+ // });
+//}
 
+export default async function ArtistPage({params,}:{params:{id:string}}){
+  const {id} = await params;
+  const cookieStore = await cookies();
 
-export async function generateMetadata({ params }) {
-  return constructMetadata({
-    title: "Artist",
-    description: "Artist page",
-    canonical: `/artist/${params.id}`,
-  });
-}
+  const token = cookieStore.get("access_token")?.value || "";
+  const artist = await getArtist(id, token);
 
-export default async function Page({ params }) {
-  const artist = await getArtist(params.id); // ← server fetchapp
+    return <ArtistClient artist={artist} id={id} />;
 
-  return <ArtistClient artist={artist} id={params.id}  />;   // ← client component
 }
