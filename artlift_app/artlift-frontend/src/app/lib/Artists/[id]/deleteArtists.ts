@@ -1,6 +1,6 @@
 import { Artist } from "@/types/props";
   
-export const deleteArtist = async (id:number, token:string) => {
+export const deleteArtist = async (id:number) => {
     try {
       const res = await fetch(`http://localhost:8000/artist/${id}/`, {
         method:"Delete",

@@ -23,7 +23,7 @@ export function constructMetadata({
 }
 
 export interface User {
-  id: number;
+  id: string;
   username: string;
   email: string;
   password: string;
@@ -32,7 +32,7 @@ export interface User {
 }
 
 export interface Artist {
-  id: number;
+  id: string;
   user__username: string;
   first_name: string;
   last_name: string;
@@ -47,6 +47,9 @@ export interface Artist {
   joined_date?: string;
   email?: string; 
   followers_count?: string;
+  following_count?: string;
+  user_id: string;
+  is_followed_by_current_user: boolean;
 }
 
 export interface Artwork {

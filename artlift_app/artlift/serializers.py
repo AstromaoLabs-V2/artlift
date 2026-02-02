@@ -65,7 +65,9 @@ class LogoutSerializer(serializers.Serializer):
         
 class ArtistSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source="user.email", read_only=True) 
+    user_id = serializers.UUIDField(source="user.id", read_only=True) 
     followers_count = serializers.SerializerMethodField()
+    following_count = serializers.SerializerMethodField()
     joined_date = serializers.DateTimeField(format="%B %Y",source="user.joined_date", read_only=True)
 
     class Meta:
@@ -84,12 +86,17 @@ class ArtistSerializer(serializers.ModelSerializer):
             "social_links",
             "is_verified",
             "followers_count",
+            "following_count",
             "joined_date",
+            "user_id"
         ]
         read_only_fields = ("artist",)
     
     def get_followers_count(self, obj):
-         return obj.user.followers.count()
+         return obj.followers.count()
+    
+    def get_following_count(self, obj):
+         return obj.following.count()
 
 class ArtworkDetailsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -101,6 +108,8 @@ class ArtworkSerializer(serializers.ModelSerializer):
     img = serializers.URLField(read_only=True)
     details = ArtworkDetailsSerializer(read_only=True)
     likes_count = serializers.SerializerMethodField()
+    is_followed_by_current_user = serializers.SerializerMethodField()
+    
 
     class Meta:
        model  = Artwork
@@ -114,11 +123,20 @@ class ArtworkSerializer(serializers.ModelSerializer):
             'is_popular',
             'is_active',
             'details',
-            'likes_count',  
+            'likes_count', 
+            'is_followed_by_current_user', 
         ]
     
     def get_likes_count(self, obj):
         return obj.likes.count()
+    
+    def get_is_followed_by_current_user(self, obj):
+        request = self.context.get("request")
+
+        return Follow.objects.filter(
+            follower=request.user,
+            following=obj.user
+        ).exists()
 
 class FollowerSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()

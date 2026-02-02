@@ -109,7 +109,33 @@ class UserListCreateView(generics.ListCreateAPIView):
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
-            return Response(UserSerializer(user).data, status=201)
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+            refresh_token = str(refresh)
+
+            response = Response({
+                "user": UserSerializer(user).data
+            }, status=201)
+
+            response.set_cookie(
+                key="access_token",
+                value=access_token,
+                httponly=True,
+                secure=True,       
+                samesite="Lax",
+                max_age=60*15     
+            )
+            response.set_cookie(
+                key="refresh_token",
+                value=refresh_token,
+                httponly=True,
+                secure=False,       #to be edited in prod -kai
+                samesite="Lax",
+                max_age=60*60*24*7 #age to be edited in prod -kai
+            )
+
+            return response
+
         return Response(serializer.errors, status=400)
 
 class UserDetailView(APIView):
@@ -171,8 +197,6 @@ class CurrentArtistView(APIView):
 
 class ArtistListView(APIView):
 
-    permission_classes = [IsAuthenticated]
-
     def get(self, request):
         artists = Artist.objects.all()
         return Response(ArtistSerializer(artists, many=True).data)
@@ -201,7 +225,6 @@ class ArtistCreateView(APIView):
 
         serializer = ArtistSerializer(artist)
         return Response(serializer.data, status=201)
-
 
 class ArtistDetailView(APIView):
 
@@ -374,9 +397,11 @@ def upload_to_supabase_profile(file):
     public_url = supabase.storage.from_("artist-profiles").get_public_url(filename)
     return public_url
 
-class UserFollowersView(APIView):
+class ArtistFollowersView(APIView):
 
-    def get(self, request, pk):
+    def get(self, request, pk=None):
+        artist = get_object_or_404(Artist, id=pk)
+
         followers = Follow.objects.filter(
             following_id=pk
         ).select_related("follower")
@@ -384,9 +409,11 @@ class UserFollowersView(APIView):
         serializer = FollowerSerializer(followers, many=True)
         return Response(serializer.data)
 
-class UserFollowingView(APIView):
+class ArtistFollowingView(APIView):
 
     def get(self, request, pk):
+        user = get_object_or_404(User, id=pk)
+        
         following = Follow.objects.filter(
             follower_id=pk
         ).select_related("following")
@@ -397,47 +424,56 @@ class UserFollowingView(APIView):
 class FollowView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self, request):
-        follower = request.user
-        following_id = request.data.get("user_id")
+    def post(self, request, pk=None):
+        follower = get_object_or_404(Artist, user=request.user)
+        following = get_object_or_404(Artist, pk=pk)
 
-        if not following_id:
-            return Response({"error": "user_id is required"}, status=status.HTTP_400_BAD_REQUEST)
-        
-        if str(follower.id) == str(following_id):
+        if str(follower.id) == str(following.id):
             return Response({"error": "Cannot follow yourself"}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            following = User.objects.get(id=following_id)
-        except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
-        
         follow, created = Follow.objects.get_or_create(follower=follower, following=following)
 
         if not created:
             return Response({"message": "Already following"}, status=status.HTTP_200_OK)
 
-        return Response({"message": f"You are now following {following.username}"}, status=status.HTTP_201_CREATED)
-    
-    def delete(self, request):
-        follower = request.user
-        following_id = request.data.get("user_id")
+        return Response({"message": f"You are now following {following.user.username}"}, status=status.HTTP_201_CREATED)
 
-        if not following_id:
-            return Response({"error": "user_id is required"}, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, pk=None):
+        follower = get_object_or_404(Artist, user=request.user)
+        following = get_object_or_404(Artist, pk=pk)
 
-        try:
-            following = User.objects.get(id=following_id)
-        except User.DoesNotExist:
-            return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        if str(follower.id) == str(following.id):
+            return Response({"error": "Cannot unfollow yourself"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             follow = Follow.objects.get(follower=follower, following=following)
             follow.delete()
-            return Response({"message": f"You unfollowed {following.username}"}, status=status.HTTP_200_OK)
+            return Response({"message": f"You unfollowed {following.user.username}"}, status=status.HTTP_200_OK)
         except Follow.DoesNotExist:
             return Response({"message": "You are not following this user"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
+class FollowStatusView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk=None):
+        try:
+            follower = get_object_or_404(Artist, user=request.user)
+            following = get_object_or_404(Artist, pk=pk)
+            
+            is_following = Follow.objects.filter(
+                follower=follower, 
+                following=following
+            ).exists()
+            
+            return Response({
+                "is_following": is_following
+            }, status=status.HTTP_200_OK)
+        except Artist.DoesNotExist:
+            return Response(
+                {"error": "Artist not found"}, 
+                status=status.HTTP_404_NOT_FOUND
+            )
+            
 class LikesView(APIView):
     permission_classes = [IsAuthenticated]
 

@@ -9,7 +9,7 @@ type Props = {
   mode:"create" | "edit";
   onUpdated: (artist: Artist) => void;
 };
-export default function ArtistForm({ artist, token, mode, onUpdated }: Props) {
+export default function ArtistForm({ artist, mode, onUpdated }: Props) {
   const [artistEditForm, setArtistEditForm] = useState<Partial<Artist>>({
     first_name: artist?.first_name ?? "",
     last_name: artist?.last_name ?? "",

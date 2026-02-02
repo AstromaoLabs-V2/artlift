@@ -5,7 +5,7 @@ from artlift.models import Artwork, User
 
 class Order(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
+    user = models.ForeignKey("artlift.User", on_delete=models.CASCADE, related_name='orders')
 
     artist_id = models.ForeignKey(User, on_delete=models.CASCADE)
     artwork_id = models.ForeignKey(Artwork, on_delete=models.CASCADE)
@@ -43,9 +43,7 @@ class Order(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        db_table = 'orders'
         ordering = ['-created_at']
-        managed = False
 
     def __str__(self):
          return f"Order {self.id} - ${self.total_amount}"
@@ -78,7 +76,6 @@ class Payment(models.Model):
 
     class Meta:
         db_table = 'payments'
-        managed = False
 
     def __str__(self):
         return f"Payment {self.stripe_payment_intent_id} - {self.status}"
@@ -115,7 +112,6 @@ class Refund(models.Model):
 
     class Meta:
         db_table = 'refunds'
-        managed = False
 
     def __str__(self):
         return f"Refund {self.stripe_refund_id}"

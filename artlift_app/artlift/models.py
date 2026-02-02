@@ -31,6 +31,12 @@ class User(AbstractUser):
         return self.username
 
 class Artist(models.Model): 
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False,
+        unique=True
+    )
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="artist")
     last_name = models.CharField(max_length=255)
     first_name = models.CharField(max_length=255)
@@ -73,15 +79,27 @@ class ArtworkDetails(models.Model):
     
 
 class Follow(models.Model):
-    follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name="following")
-    following = models.ForeignKey(User, on_delete=models.CASCADE, related_name="followers")
+    follower = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name="following")
+    following = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name="followers")
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ("follower", "following") #this is a test i've read this from django meta options
 
     def __str__(self): 
-        return f"{self.followers} → {self.following}"
+        return f"{self.follower.username} → {self.following.username}"
+    
+# class ArtistFollow(models.Model):
+#     follower = models.ForeignKey(User, on_delete=models.CASCADE, related_name='followed_artists')
+#     artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name='followers')
+#     created_at = models.DateTimeField(auto_now_add=True)
+
+#     class Meta:
+#         unique_together = ('follower', 'artist')
+#         ordering = ['-created_at']
+
+#     def __str__(self):
+#         return f"{self.follower.username} follows {self.artist.name}"
 
 class Like(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE) 

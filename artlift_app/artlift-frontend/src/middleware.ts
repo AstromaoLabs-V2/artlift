@@ -3,29 +3,44 @@ import { verifyJWT } from "@/utils/auth";
 
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get("access_token")?.value;
-  
-  console.log("This for debugging auth -kai");
-  console.log("Midware Checking:", req.nextUrl.pathname, "token:", token ? "exists" : "none");
-  
-  if (!token) {
-    console.log("🔴 No Token");
-    return NextResponse.redirect(new URL("/signin", req.url));
+  const url = req.nextUrl.clone();
+
+  const protectedRoutes = ["/dashboard", "/artwork", "/artist", "/sample"];
+
+  const isProtected = protectedRoutes.some((path) =>
+    req.nextUrl.pathname.startsWith(path)
+  );
+
+  if (isProtected && !token) {
+    url.pathname = "/signin";
+    url.searchParams.set("redirect", req.nextUrl.pathname);
+    return NextResponse.redirect(url);
   }
 
-  const valid = await verifyJWT(token);
-  if (!valid) {
-    console.log("🔴 Invalid Token");
-    return NextResponse.redirect(new URL("/signin", req.url));
+  if (token) {
+    const valid = await verifyJWT(token);
+
+    if (!valid) {
+      const res = NextResponse.redirect(new URL("/signin", req.url));
+      res.cookies.delete("access_token");
+      return res;
+    }
+
+    if (req.nextUrl.pathname === "/signin") {
+      const redirectTo = req.nextUrl.searchParams.get("redirect") || "/home";
+      return NextResponse.redirect(new URL(redirectTo, req.url));
+    }
   }
 
-  console.log("✅ Success HAHAH");
   return NextResponse.next();
 }
 
 export const config = {
   matcher: [
-    "/dashboard/:path*", 
+    "/dashboard/:path*",
     "/artwork/:path*",
-    "/sample/:path*"  
-  ], 
+    "/artist/:path*",
+    "/sample/:path*",
+    "/signin",
+  ],
 };

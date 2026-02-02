@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Card,
   CardContent,
@@ -25,6 +25,8 @@ export default function SignInComponent({
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/home";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,7 +55,11 @@ export default function SignInComponent({
       //this will be for client side later on -kai
       localStorage.setItem("access_token", data.access);
       localStorage.setItem("refresh_token", data.refresh);
-      router.push("/sample");
+      router.push("/home");
+
+      document.cookie = `access_token=${data.access}; path=/`;
+
+      router.push(redirectTo);
     } catch (err) {
       setError("Login failed. Please try again.");
       setIsLoading(false);

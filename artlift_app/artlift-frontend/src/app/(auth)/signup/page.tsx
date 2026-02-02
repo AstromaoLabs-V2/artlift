@@ -1,3 +1,4 @@
+
 import SignUpComponent from "@/components/auth/signup";
 import { constructMetadata } from "@/types/props";
 import { verifyJWT } from "@/utils/auth";
@@ -18,7 +19,7 @@ export default async function Signup(){
 
   if (token) {
     const valid = await verifyJWT(token);
-   if (valid) redirect("/sample");
+   if (valid) redirect("/home");
   }
 
   return(

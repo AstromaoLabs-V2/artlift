@@ -1,7 +1,7 @@
 
 
 from django.urls import path
-from .views import ArtistDetailView, ArtistListView, ArtworkCommentCreate, ArtworkCommentList, CommentDelete, CommentReplyCreate, CurrentArtistView, FollowView, LikeView, LikesView, UserDetailView, UserFollowersView, UserFollowingView, UserListCreateView, APIKeyCreate, APIKeyList, APIKeyDetail, ArtistCreateView, ArtworkListView, ArtworkDetailView, DiscoverView, LoginView, LogoutView, AddToCartView, CartListView, CurrentUserView
+from .views import ArtistDetailView, ArtistListView, ArtworkCommentCreate, ArtworkCommentList, CommentDelete, CommentReplyCreate, CurrentArtistView, FollowStatusView, FollowView,LikeView, LikesView, UserDetailView, ArtistFollowersView, ArtistFollowingView, UserListCreateView, APIKeyCreate, APIKeyList, APIKeyDetail, ArtistCreateView, ArtworkListView, ArtworkDetailView, DiscoverView, LoginView, LogoutView, AddToCartView, CartListView, CurrentUserView
 from rest_framework_simplejwt.views import TokenVerifyView
 
 urlpatterns = [
@@ -16,13 +16,13 @@ urlpatterns = [
     path("auth/verify/", TokenVerifyView.as_view()),
     
     # path("users/", UserListCreateView.as_view(), name="users"), #made this to signup -kai
-    path("users/<int:pk>/", UserDetailView.as_view(), name="user-detail"),
+    path("users/<uuid:pk>/", UserDetailView.as_view(), name="user-detail"),
     path("current_user/", CurrentUserView.as_view(), name="current-user"),
     path('artist/me/', CurrentArtistView.as_view(), name='current-artist'), 
     
     path("artists/", ArtistListView.as_view(), name="artist-list"),
     path("artist/create/", ArtistCreateView.as_view(), name="artist-create"),
-    path("artist/<int:pk>/", ArtistDetailView.as_view(), name="artist-detail"),
+    path("artist/<uuid:pk>/", ArtistDetailView.as_view(), name="artist-detail"),
 
     path("artworks/", ArtworkListView.as_view(), name="artwork-list"),
     path("artwork/<int:pk>/", ArtworkDetailView.as_view(), name="artwork-detail"), #here you will get artwork details also methods: GET specific artwork by id, edit, delete 
@@ -30,9 +30,11 @@ urlpatterns = [
     path("discover/", DiscoverView.as_view(), name="discover"),
 
     #follow urls -kai
-    path("user/<int:pk>/followers/",UserFollowersView.as_view(), name="followers"),
-    path("user/<int:pk>/following/",UserFollowingView.as_view(), name="following"),
-    path("follow/", FollowView.as_view(), name="follow"),
+    path("artist/<uuid:pk>/followers/",ArtistFollowersView.as_view(), name="followers"),
+    path("artist/<uuid:pk>/following/",ArtistFollowingView.as_view(), name="following"),
+    path("artist/<uuid:pk>/follow/", FollowView.as_view(), name="user-follow"),
+    path("artist/<uuid:pk>/follow-status/", FollowStatusView.as_view(), name="follow-status"),
+    
 
     #like
     path("artwork/<int:pk>/likes", LikesView.as_view(), name="likes"),

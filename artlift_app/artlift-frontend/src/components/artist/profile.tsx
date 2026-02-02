@@ -1,9 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-import { Button } from "../ui/button";
 import { Artist } from "@/types/props";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   Mail,
   MapPin,
@@ -15,7 +13,10 @@ import {
   Ellipsis,
   Pencil,
   UserIcon,
+  CircleX,
 } from "lucide-react";
+import Image from "next/image";
+import { Button } from "../ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Field, FieldLabel } from "../ui/field";
@@ -26,12 +27,19 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import FollowButton from "../followBtn";
 
-interface ProfileComponentProps {
+type ArtistClientProps = {
   artist: Artist;
-}
+  id: string;
+  isOwnProfile: boolean;
+};
 
-export default function ProfileComponent({ artist }: ProfileComponentProps) {
+export default function ArtistProfileComponent({
+  artist,
+  id,
+  isOwnProfile
+}: ArtistClientProps) {
   const router = useRouter();
 
   return (
@@ -47,6 +55,7 @@ export default function ProfileComponent({ artist }: ProfileComponentProps) {
                 className="object-cover"
               />
               <div className="absolute end-4 top-4">
+                {!isOwnProfile &&(
                 <Button
                   className="bg-background/50 rounded-full size-8"
                   onClick={() => router.push("/dashboard/me/edit")}
@@ -54,6 +63,7 @@ export default function ProfileComponent({ artist }: ProfileComponentProps) {
                 >
                   <Pencil />
                 </Button>
+                )}
               </div>
             </div>
           )}
@@ -101,28 +111,25 @@ export default function ProfileComponent({ artist }: ProfileComponentProps) {
               <TabsList>
                 <TabsTrigger value="1">Profile</TabsTrigger>
                 <TabsTrigger value="2">Artworks</TabsTrigger>
-                <TabsTrigger value="3">Commissions</TabsTrigger>
               </TabsList>
-
+              <div className="flex items-center space-x-1">
+                {!isOwnProfile && (
+              <FollowButton artistId={artist.id} initialFollowing={artist.is_followed_by_current_user} className="ml-2"/>
+                )}
               <DropdownMenu>
-                <DropdownMenuTrigger className="shrink-0">
-                  <Ellipsis />
+                <DropdownMenuTrigger className="flex items-center justify-center w-10 h-10 rounded-lg border-2 hover:bg-gray-200 cursor-pointer">
+                 <Ellipsis className="w-5 h-5" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="bg-white">
                   <DropdownMenuItem>
                     <UserIcon /> View Activity Logs
                   </DropdownMenuItem>
                   <DropdownMenuItem>
-                    <UserIcon /> Samples
-                  </DropdownMenuItem>
-                  <DropdownMenuItem
-                    onClick={() => router.push("/dashboard/me/edit")}
-                  >
-                    <Pencil />
-                    Edit Profile
+                    <CircleX /> Block 
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+            </div>
             </div>
 
             <div className="max-w-full overflow-x-hidden">
@@ -230,9 +237,6 @@ export default function ProfileComponent({ artist }: ProfileComponentProps) {
 
               <TabsContent value="2" className="mt-4">
                 artworks examples here HAHA
-              </TabsContent>
-              <TabsContent value="3" className="mt-4">
-                commissions
               </TabsContent>
             </div>
           </Tabs>

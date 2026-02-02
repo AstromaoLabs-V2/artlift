@@ -47,7 +47,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'artlift',
-    'payments'
+    'payments',
+    'django_extensions',
 ]
 
 MIDDLEWARE = [

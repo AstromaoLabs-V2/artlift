@@ -4,10 +4,12 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldDescription } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Errors } from "@/types/props";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@radix-ui/react-label";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function SignUpComponent({
   className,
@@ -15,12 +17,12 @@ export default function SignUpComponent({
 }: React.ComponentProps<"div">) {
   const [errors, setErrors] = useState<Errors>({});
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(false);
   const [formData, setFormData] = useState({
     username: "",
     password: "",
     email: "",
   });
+  const router = useRouter();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -46,6 +48,7 @@ export default function SignUpComponent({
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
+        credentials: "include",
       });
 
       const result = await res.json();
@@ -54,11 +57,12 @@ export default function SignUpComponent({
         setErrors(result as Errors);
         return;
       }
+    // localStorage.setItem("access_token", result.tokens.access);
+    // localStorage.setItem("refresh_token", result.tokens.refresh);
 
-      console.log("User created:", result.user);
-      console.log("Tokens:", result.tokens);
-
-      setSuccess(true);
+    toast.success("Profile created successfully!");
+    router.push("/signin");
+      
     } catch (err) {
       setErrors({ error: "Network error. Please try again." });
     } finally {
@@ -73,10 +77,6 @@ export default function SignUpComponent({
     }
     return error;
   };
-
-  if (success) {
-    return <div>account created for toast notif -kai</div>;
-  }
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
