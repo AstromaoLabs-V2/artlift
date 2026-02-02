@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Navigation from "@/app/components/nav/navigation";
 import ArtworkForm from "@/app/components/editForm/ArtworkForm";
-import { Artwork } from "@/app/types/props";
+import { Artwork } from "@/types/props";
 
 export default function CreateArtworkPage() {
   const router = useRouter();

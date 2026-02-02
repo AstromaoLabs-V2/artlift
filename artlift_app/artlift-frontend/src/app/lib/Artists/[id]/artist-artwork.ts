@@ -1,6 +1,6 @@
 import { Artist } from "@/types/props";
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const getArtist = async (id: number, api_token: string) => {
   const res = await fetch(`${BASE_URL}/artist/${id}/`, {

@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
-import {getArtist} from "@/lib/Artists/[id]/artist-artwork";
-import ArtistClient from "@/components/artists/ArtistClient";
+import {getArtwork} from "@/lib/Artists/[id]/artist-artwork";
+import ArtworkDetailPage from "@/components/artworks/ArtworkClient";
 import { constructMetadata } from "@/types/props";
 
 //export async function generateMetadata({ params }) {
@@ -11,15 +11,23 @@ import { constructMetadata } from "@/types/props";
  // });
 //}
 
-export default async function ArtistPage({params,}:{params:{id:string}}){
+export default async function ArtworkPage({params,}:{params:{id:string}}){
   const {id} = await params;
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value || "";
+  const username = cookieStore.get("username")?.value || "";  
 
  console.log("id:", id);
   console.log("token:", token ? "あり" : "なし");
-  const artist = await getArtist(Number(id), token);
+  const artwork = await getArtwork(id, token);
+  console.log("artwork response:", artwork);
 
-    return <ArtistClient artist={artist} id={id} />;
+    return <ArtworkDetailPage artwork={artwork} artist={artwork.artist} id={id} token={token}  />;
 
 }
+
+
+
+
+
+

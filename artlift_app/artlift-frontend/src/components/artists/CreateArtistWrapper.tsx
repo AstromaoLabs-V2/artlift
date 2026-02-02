@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { Artist } from "@/types/props";
-import ArtistForm from "@/app/components/editForm/ArtistEdit";
+import ArtistForm from "@/components/artists/ArtistEdit";
 
 type Props = {
   api_token: string;

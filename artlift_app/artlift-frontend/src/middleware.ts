@@ -27,6 +27,6 @@ export const config = {
     "/dashboard/:path*", 
     "/artwork/:path*",
     "/sample/:path*", 
-    "/artist/:path*"
+   // "/artist/:path*"
   ], 
 };

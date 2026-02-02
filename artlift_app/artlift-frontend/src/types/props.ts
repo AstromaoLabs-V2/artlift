@@ -57,8 +57,7 @@ export interface Artwork {
   img: string;
   is_popular: boolean;
   is_active: boolean;
-  artist__user__username: string;
-  artist__id?: number;
+  artist:Artist;
 }
 
 export interface Errors {

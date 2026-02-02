@@ -2,8 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import {getArtwork} from "@/app/lib/Artists/[id]/getArtwork";
-import { getArtist } from "@/app/lib/Artists/[id]/getArtists";
 import { deleteArtwork } from "@/app/lib/Artists/[id]/deleteArtwork";
 import ArtworkForm from "@/app/components/editForm/ArtworkForm";
 import SnsSystem from "@/app/components/features/SnsSystem";
@@ -15,96 +13,71 @@ import CommentHandle from "@/app/components/commentSection/CommentHandle";
 import { getComments } from "@/app/lib/Artwork/[id]/comments/ListComments";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 
-export default function ArtworkDetailPage() {
+type ArtworkClientProps = {
+  artwork: Artwork;
+  artist:Artist;
+  id: string;
+  token:string;
+};
+
+export default function ArtworkDetailPage(props:ArtworkClientProps) {
   const params = useParams();
   const router = useRouter();
-  const id = params.id as string;
-
-  const [artwork, setArtwork] = useState<Artwork | null>(null);
-  const [artist, setArtist] = useState<Artist | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [artworks, setArtworks] = useState<Artwork | null>(null);
+//  const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
-  const [token, setToken] = useState<string | null>(null);
-  const [isOwner, setIsOwner] = useState(false);
+ // const [token, setToken] = useState<string | null>(null);
+ // const [isOwner, setIsOwner] = useState(false);
   const [comments, setComments] = useState<Comments[]>([]);
 
+    const { id, token, artwork } = props;
+
+useEffect(() => {
+   setArtworks(artwork);
+   }, [artwork]);
   //delete for staff
   //const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
-
-  useEffect(() => {
     // Get token and username from localStorage
-    const storedToken = localStorage.getItem("access_token");
+   // const storedToken = localStorage.getItem("access_token");
    // const username = localStorage.getItem("username");
       //const is_staff = localStorage.getItem("is_staff") === "true";
-     if (!storedToken) {
-      router.push("/auth/login");
-      return;
+    // if (!storedToken) {
+    //  router.push("/auth/login");
+    //  return;
+
+  const fetchCommentsData = async () => {
+    try {
+      const commentData = await getComments(id, token);
+      setComments(commentData || []);
+    } catch (err) {
+      console.error("Failed to fetch comments:", err);
     }
-
-    const fetchData = async () => {
-      try {
-        // Fetch artwork
-        const artworkData = await getArtwork(id, storedToken);
-        setArtwork(artworkData);
-
-        //fetch Artist
-        const data = await getArtist(id, storedToken);
-        setArtist(data);
-
-          // Fetch comments
-        const commentData = await getComments(id, storedToken);
-        setComments(commentData || []);
-
-        // Check if current user is the owner
-        const username = localStorage.getItem("username");
-        if (data?.user__username === username) {
-          setIsOwner(true);
-        }
-
-      }
-
-      catch (err: any) {
-        if (err.message === "UNAUTHORIZED") {
-          router.push("/auth/login");
-        } else if (err.message.includes("404")) {
-          console.error("Artwork not found");
-        } else {
-          console.error(err);
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-    setToken(storedToken);
-  }, [id, router]);
-
-   const fetchCommentsData = async () => {
-    if(!token) return;
-    const commentData = await getComments(id, token);
-    setComments(commentData);
   };
 
+  useEffect(() => {
+    fetchCommentsData();
+  }, [id, token]);
 
-  const handleDeleteArtwork = async () => {
+  const handleDeleteArtwork = async()=>{
     if (!artwork || !token) return;
 
-  try {
-        await deleteArtwork(artwork.id, token);
-        router.push("/artwork");
-      } catch (err) {
-        console.error(err);
-        alert("Failed to delete artwork.");
-      }
-  };
+    try{
+      await deleteArtwork(artwork.id, token);
+      router.push("/artwork");
+    }
+    catch(errr){
+      console.error("Failed to delete artwork:", errr);
+      alert("Failed to delete artwork");
+    }
+  }
 
   const handleArtworkUpdated = (updatedArtwork: Artwork) => {
-    setArtwork(updatedArtwork);
+    setArtworks(updatedArtwork);
     setEditMode(false);
   };
 
-  if (loading) return <p className="text-center py-8">Loading artwork...</p>;
-  if (!artwork) return <p className="text-center py-8">Artwork not found.</p>;
+  if (!artworks) return <p className="text-center py-8">Artwork not found.</p>;
+
 
   function handleCommentAdded(): void {
     throw new Error("Function not implemented.");
@@ -121,48 +94,48 @@ export default function ArtworkDetailPage() {
             <div className="col-span-2 bg-white rounded-lg overflow-hidden shadow-lg">
               <div className="aspect-[4/5] overflow-hidden bg-gray-200">
                 <img
-                  src={artwork.img}
-                  alt={artwork.title}
+                  src={artworks.img}
+                  alt={artworks.title}
                   className="w-full h-full object-cover"
                 />
               </div>
 
               {/* Artwork Info */}
               <div className="p-6">
-                <h1 className="text-3xl font-bold mb-2">{artwork.title}</h1>
+                <h1 className="text-3xl font-bold mb-2">{artworks.title}</h1>
 
                 {/* Artist Name */}
                 <p className="text-lg text-gray-600 mb-4">
                   by{" "}
                   <span
                     className="font-semibold cursor-pointer hover:underline text-blue-600"
-                    onClick={() => router.push(`/artist/${artwork.artist__id}`)}
+                    onClick={() => router.push(`/artist/${artworks.artist.id}`)}
                   >
-                    {/*{artist.first_name}*/}
+                   {artworks.artist.first_name} {artworks.artist.last_name}
                   </span>
                 </p>
 
                 {/* Artwork Details */}
                 <div className="border-t pt-4 mb-4">
-                  {artwork.size && (
+                  {artworks.size && (
                     <p className="text-sm text-gray-700 mb-2">
                       <span className="font-semibold">Size:</span>{" "}
-                      {artwork.size}
+                      {artworks.size}
                     </p>
                   )}
                   <p className="text-sm text-gray-700 mb-2">
                     <span className="font-semibold">Status:</span>{" "}
-                    {artwork.is_active ? "Active" : "Inactive"}
+                    {artworks.is_active ? "Active" : "Inactive"}
                   </p>
             
                 </div>
 
                 {/* Description */}
-                {artwork.description && (
+                {artworks.description && (
                   <div className="border-t pt-4 mb-6">
                     <h3 className="font-semibold text-lg mb-2">Description</h3>
                     <p className="text-gray-700 leading-relaxed">
-                      {artwork.description}
+                      {artworks.description}
                     </p>
                   </div>
                 )}
@@ -219,3 +192,5 @@ export default function ArtworkDetailPage() {
     </>
   );
 }
+
+
