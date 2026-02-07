@@ -1,4 +1,4 @@
-
+//get artwork details and comments component (form)
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,19 +12,18 @@ import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 
 type ArtworkClientProps ={
   artwork: Artwork;
-  id: string;
   comments: Comments[];
 }
 
-export default function ArtworkDetailPage({artwork:Artwork, id, comments}:ArtworkClientProps) {
+export default function ArtworkDetailPage({artwork:Artwork, comments}:ArtworkClientProps) {
 
   const router = useRouter();
   const [artwork, setArtwork] = useState<Artwork>(Artwork);
-
   //const [loading, setLoading] = useState(true);
   //const [isOwner, setIsOwner] = useState(false);
   const [localComments, setLocalComments] = useState<Comments[]>(comments);
 
+  //if new comment added, update local comments and new one is one the top
   const handleCommentAdded = (newComment: Comments) => {
     setLocalComments((prev) => [newComment, ...prev]);
   };
@@ -48,9 +47,6 @@ export default function ArtworkDetailPage({artwork:Artwork, id, comments}:Artwor
        // }
 
      // }
-
-
-
 
   return (
     <>
@@ -114,13 +110,13 @@ export default function ArtworkDetailPage({artwork:Artwork, id, comments}:Artwor
       
           </div>
 
-
             {/* Comments Section */}
             <div className="comment bg-white rounded-lg shadow-lg p-6">
             <CommentHandle
               comments={localComments}
               artworkId={artwork.id}
               onCommentAdded={handleCommentAdded}
+              onReplyUpdated={handleReplyUpdated} 
             />
           </div>
         </div>

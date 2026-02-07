@@ -1,14 +1,16 @@
 
 "use client";
 
-import { Comments } from "@/app/types/props";
+import { Comments } from "@/types/props";
 import { useState } from "react";
 import { commentAPI } from "@/lib/comment/comment";
 import CommentCard from "@/components/comments/CommentCard";
 
+//comments variable is data of commments
 type Props = {
   comments: Comments[];
   onCommentAdded: (newComment:Comments) => void;
+  onReplyUpdated: (updated:Comments[]) => void;
   artworkId: number;
 };
 
@@ -16,6 +18,7 @@ export default function CommentHandle({
   comments,
   onCommentAdded,
   artworkId,
+  onReplyUpdated,
 }: Props) {
   const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,9 +30,11 @@ export default function CommentHandle({
     setIsSubmitting(true);
 
     try {
+
+      // if this is a form data, keep using this. if not may need to replace
       const formData = new FormData();
       formData.append("text", commentText);
-      const newComment = await commentAPI.create(artworkId, formData);
+      const newComment = await commentAPI.commentCreate(artworkId, formData);
       setCommentText("");
       onCommentAdded(newComment); 
     } catch (err) {
@@ -40,7 +45,7 @@ export default function CommentHandle({
     }
   };
 
-  return (
+   return (
     <div className="space-y-6">
       <form onSubmit={handleSubmitComment}>
         <textarea
@@ -53,13 +58,15 @@ export default function CommentHandle({
       {comments.map((comment) => (
         <CommentCard
           key={comment.id}
-          comment={comment}
+           comment={comment}
           artworkId={artworkId}
-          onReplyAdded={onCommentAdded}
+          onReplyAdded={onReplyUpdated}   
         />
       ))}
     </div>
      
     
   );
+
+ 
 }

@@ -1,4 +1,4 @@
-
+//this page is only for viewing artwork details and share comments
 import ArtistClient from "@/components/artist/profile";
 import ArtworkDetailPage from "@/components/artworks/ArtworkClient";
 import NotFound from "@/components/auth/not-found";
@@ -15,8 +15,9 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params; //needs to be unwrapped in docs -kai
   const artwork = await artworkAPI.get(Number(id));
-  console.log(artworkAPI.get(id))
-  console.log("get id",id);
+
+  //console.log(artworkAPI.get(id))
+  //console.log("get id",id);
 
   if (!artwork) {
     return constructMetadata({
@@ -48,9 +49,8 @@ const comments = await commentAPI.get(Number(id));
   // return <ArtistClient artist={artist} id={id} />;
   return (
     <ArtworkDetailPage
-      artwork={artwork}
-      id={id}
-      comments={comments}
+      artwork={artwork} //artwork data
+      comments={comments} //comments data
     //  isOwnProfile={isOwnProfile}
     />
   );

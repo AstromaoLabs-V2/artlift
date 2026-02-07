@@ -1,13 +1,12 @@
 // dashboard/artwork/edit/page.tsx
 import { artworkAPI } from "@/lib/artwork/artwork";
-import ArtworkForm from "@/components/artworks/CreateArtwork";
 import { cookies } from "next/headers";
+import EditArtworkForm from "@/components/artworks/EditArtworkClient";
 
 //It is really depends on how you make a file structure. Need consultant - Soki
 type PageProps = {
   searchParams: {
     id?: string;
-    [key: string]: string | undefined;
   };
 };
 export default async function EditPage({ searchParams }: PageProps) {
@@ -20,17 +19,13 @@ export default async function EditPage({ searchParams }: PageProps) {
   }
 
   if (!token) {
-    return <div>Please log in to edit artwork.</div>;
+    return <div>Please login to edit artwork.</div>;
   }
 
   const artwork = await artworkAPI.get(id);
   return (
-    <ArtworkForm
+    <EditArtworkForm
       artwork={artwork}
-      mode="edit"
-      artworkId={id}
-      artistId={artwork.artist.id}
-      onUpdated={() => {}}
     />
   );
 }
