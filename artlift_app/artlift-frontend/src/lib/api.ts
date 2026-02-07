@@ -1,3 +1,5 @@
+
+//api calling place
 export const getDiscover = async () => {
   try {
     const res = await fetch("http://127.0.0.1:8000/discover/", {
@@ -19,6 +21,7 @@ export const getDiscover = async () => {
   }
 };
 
+
 export async function apiArtist(url: string, options: RequestInit = {}) {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
@@ -26,7 +29,9 @@ export async function apiArtist(url: string, options: RequestInit = {}) {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
     ...options,
     headers: {
-      "Content-Type": "application/json",
+          ...(options.body instanceof FormData
+        ? {} 
+        : { "Content-Type": "application/json" }),
       ...(token && { Authorization: `Bearer ${token}` }),
       ...options.headers,
     },
