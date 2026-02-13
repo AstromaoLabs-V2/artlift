@@ -10,7 +10,7 @@ import CommentCard from "@/components/comments/CommentCard";
 type Props = {
   comments: Comments[];
   onCommentAdded: (newComment:Comments) => void;
-  onReplyUpdated: (updated:Comments[]) => void;
+  onReplyAdded: (parentId: number, newReply: Comments) => void;
   artworkId: number;
 };
 
@@ -18,7 +18,7 @@ export default function CommentHandle({
   comments,
   onCommentAdded,
   artworkId,
-  onReplyUpdated,
+  onReplyAdded,
 }: Props) {
   const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,6 +48,7 @@ export default function CommentHandle({
    return (
     <div className="space-y-6">
       <form onSubmit={handleSubmitComment}>
+        {/*may need user's icon here?"* need to see display and judge*/}
         <textarea
           value={commentText}
           onChange={(e) => setCommentText(e.target.value)}
@@ -57,10 +58,8 @@ export default function CommentHandle({
 
       {comments.map((comment) => (
         <CommentCard
-          key={comment.id}
-           comment={comment}
-          artworkId={artworkId}
-          onReplyAdded={onReplyUpdated}   
+          comment={comment}
+         onReplyAdded={onReplyAdded}  
         />
       ))}
     </div>

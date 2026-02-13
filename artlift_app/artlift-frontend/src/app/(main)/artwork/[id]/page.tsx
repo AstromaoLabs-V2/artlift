@@ -50,7 +50,7 @@ const comments = await commentAPI.get(Number(id));
   return (
     <ArtworkDetailPage
       artwork={artwork} //artwork data
-      comments={comments} //comments data
+      initialComments={comments} //comments data
     //  isOwnProfile={isOwnProfile}
     />
   );

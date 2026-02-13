@@ -4,7 +4,7 @@ import { useState } from "react";
 import{useRouter} from "next/navigation";
 import { Artwork } from "@/types/props";
 import { artworkAPI } from "@/lib/artwork/artwork";
-import DeleteButton from "@/components/DeleteButton";
+import DeleteButton from "@/components/ui/DeleteButton";
 
 type Props = {
   artwork: Artwork;
@@ -21,6 +21,8 @@ export default function EditArtworkForm({ artwork}: Props) {
 
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
 
   const handleChange = (e: any) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -33,29 +35,41 @@ export default function EditArtworkForm({ artwork}: Props) {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     setLoading(true);
+    setSuccess(false);
+
 
     try {
-      let payload: any = form;
-
-      if (file) {
-        // optional for editing
         const formData = new FormData();
+         
         formData.append("title", form.title ?? "");
         formData.append("size", form.size ?? "");
         formData.append("description", form.description ?? "");
-        formData.append("image", file);
-        payload = formData;
-      }
-      else {
-        payload = {
-          title: form.title,
-          size: form.size,
-          description: form.description,
-        };
+      
+      if (file) {
+         formData.append("image", file);
       }
 
-      const updated = await artworkAPI.update(artwork.id, payload);
+       const token = document.cookie
+      .split("; ")
+      .find(row => row.startsWith("access_token="))
+      ?.split("=")[1];
+
+        const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/artwork/${artwork.id}/`,
+      {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      }
+    );
+
+    if(!res.ok){
+      throw new Error("Failed to update artwork");
+    }
       alert("Artwork updated");
+      router.refresh();
     } catch (err) {
       console.error(err);
       alert("Update failed.");
@@ -66,8 +80,26 @@ export default function EditArtworkForm({ artwork}: Props) {
 
   const handleDelete = async () => {
     try {
-      await artworkAPI.delete(artwork.id);
-      router.push("/artwork");
+      const token = document.cookie
+  .split("; ")
+  .find(row => row.startsWith("access_token="))
+  ?.split("=")[1];
+
+const res = await fetch(
+  `${process.env.NEXT_PUBLIC_API_URL}/artwork/${artwork.id}/`,
+  {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  }
+);
+
+if (!res.ok) {
+  throw new Error("Failed to delete artwork");
+}
+
+router.push("/artwork");
     } catch (err) {
       console.error(err);
       alert("Failed to delete artwork.");

@@ -3,13 +3,11 @@ import { commentAPI } from "@/lib/comment/comment";
 import { Comments } from "@/types/props";
 
 type Props = {
-  key:number;
   comment: Comments;
-  artworkId: number;
-  onReplyAdded?: (updated: Comments[]) => void; 
+  onReplyAdded: (parentId: number, newReply: Comments) => void;
 };
 
-export default function CommentCard({ key, comment, artworkId, onReplyAdded }: Props) {
+export default function CommentCard({ comment, onReplyAdded }: Props) {
   const [replyText, setReplyText] = useState("");
   const [isSubmittingReply, setIsSubmittingReply] = useState(false);
 
@@ -23,12 +21,8 @@ export default function CommentCard({ key, comment, artworkId, onReplyAdded }: P
       const formData = new FormData();
       formData.append("text", replyText);
 
-      await commentAPI.replyCreate(key, formData);
-
-      setReplyText("");
-
-      const updated = await commentAPI.get(artworkId);
-      onReplyAdded?.(updated);  
+      const newReply = await commentAPI.replyCreate(comment.id, formData);
+      onReplyAdded?.(comment.id, newReply);  
 
     } catch (err) {
       console.error("Failed to add reply:", err);
@@ -39,11 +33,13 @@ export default function CommentCard({ key, comment, artworkId, onReplyAdded }: P
   };
    return (
     <div className="border-b py-2">
+     <img src={comment.user_img} alt={`${comment.user}'s profile`}  />
       <p className="font-semibold">{comment.user}</p>
       <p>{comment.text}</p>
 
  
       {/* Replyfor */}
+      {/*if we need user icon here, probably need artist?*/}
       <form onSubmit={handleReplySubmit} className="ml-6 mt-2">
         <input
           type="text"

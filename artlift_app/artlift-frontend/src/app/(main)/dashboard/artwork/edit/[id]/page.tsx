@@ -5,14 +5,16 @@ import EditArtworkForm from "@/components/artworks/EditArtworkClient";
 
 //It is really depends on how you make a file structure. Need consultant - Soki
 type PageProps = {
-  searchParams: {
-    id?: string;
+  params: {
+    id: string;
   };
 };
-export default async function EditPage({ searchParams }: PageProps) {
-  const id = searchParams.id;
+export default async function EditPage({ params}: PageProps) {
+  const id = params.id;
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
+  const artwork = await artworkAPI.get(id);
+  console.log(artwork);
 
   if (!id) {
     return <div>Artwork ID is missing.</div>;
@@ -22,7 +24,6 @@ export default async function EditPage({ searchParams }: PageProps) {
     return <div>Please login to edit artwork.</div>;
   }
 
-  const artwork = await artworkAPI.get(id);
   return (
     <EditArtworkForm
       artwork={artwork}
