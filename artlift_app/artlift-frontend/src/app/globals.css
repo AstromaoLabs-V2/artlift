@@ -4,6 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --primary:#5A4FCF;
   --basic-font-size: 16px;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
@@ -12,7 +13,6 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
@@ -86,10 +86,12 @@
 
 body {
   margin: 2em 3em;
+  
 }
 
 h1 {
   font-size: 3em;
+  color:var(--primary-color);
 }
 
 h2{
@@ -113,7 +115,7 @@ h2{
   --accent: oklch(0.269 0 0);
   --accent-foreground: oklch(0.985 0 0);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
+  --border: #6b62cdcc;
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.556 0 0);
   --chart-1: oklch(0.488 0.243 264.376);

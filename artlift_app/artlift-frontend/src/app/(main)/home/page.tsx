@@ -17,7 +17,7 @@ export default async function Home() {
   return (
     <div>
     <div className="py-5">
-      <DiscoverCarousel artworks={discover.artworks} />
+      <DiscoverCarousel artworks={discover.artworks} artists={discover.artists} />
       
       {/* <NewArtistsSection artists={discover.artists} /> */}
       {/* <PopularArtworksSection artworks={discover.artworks} /> */}
