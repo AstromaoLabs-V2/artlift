@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { deleteArtist } from "@/app/lib/Artists/[id]/deleteArtists";
 import FollowSubscribe from "@/app/components/features/FollowSubscribe";
 import ArtistForm from "@/app/components/editForm/ArtistEdit";
-import DeleteButton from "@/app/components/DeleteButton";
+import DeleteButton from "@/components/ui/DeleteButton";
 
 import { Artist } from "@/types/props";
 
@@ -14,7 +14,10 @@ type ArtistClientProps = {
   id: string;
 };
 
-export default function ArtistClient({ artist: Artist, id }: ArtistClientProps) {
+export default function ArtistClient({
+  artist: Artist,
+  id,
+}: ArtistClientProps) {
   const router = useRouter();
   const [artist, setArtist] = useState<Artist>(Artist);
   // const [token, setToken] = useState<string | null>(null); //this are not needed
@@ -40,8 +43,7 @@ export default function ArtistClient({ artist: Artist, id }: ArtistClientProps) 
 
   return (
     <>
-
- {artist.bg && (
+      {artist.bg && (
         <img
           className="w-full object-cover"
           src={artist.bg}
@@ -49,21 +51,14 @@ export default function ArtistClient({ artist: Artist, id }: ArtistClientProps) 
         />
       )}
 
-      <FollowSubscribe
-        artistIcon={artist.img}
-        artistName={artist.first_name}
-      />
+      <FollowSubscribe artistIcon={artist.img} artistName={artist.first_name} />
 
       <h2>About</h2>
       <p>{artist.about}</p>
 
-        <ArtistForm
-          artist={artist}
-          mode="edit"
-          onUpdated={setArtist}
-        />
+      <ArtistForm artist={artist} mode="edit" onUpdated={setArtist} />
 
-<DeleteButton onDelete={handleDeleteArtist}/>
+      <DeleteButton onDelete={handleDeleteArtist} />
     </>
   );
 }

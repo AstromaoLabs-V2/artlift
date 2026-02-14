@@ -13,6 +13,8 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params; //needs to be unwrapped in docs -kai
   const artist = await artistAPI.get(id);
+  console.log("get id",id);
+
   if (!artist) {
     return constructMetadata({
       title: "Artist Not Found | Artlift",
