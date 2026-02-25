@@ -34,6 +34,7 @@ export interface User {
 export interface Artist {
   id: string;
   user__username: string;
+  user: User;
   first_name: string;
   last_name: string;
   address?: string;
@@ -60,8 +61,19 @@ export interface Artwork {
   img: string;
   is_popular: boolean;
   is_active: boolean;
+  artist: Artist;
   artist__user__username: string;
   artist__id?: number;
+  details?: ArtworkDetails ;
+}
+
+export type ArtworkDetails = {
+  about: string
+  mood: string
+  medium: string
+  subject: string
+  art_styles: string
+  year_created: number
 }
 
 export interface Errors {

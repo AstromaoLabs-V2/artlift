@@ -564,6 +564,7 @@ class CommentReplyCreate(APIView):
 
     def post(self, request, comment_id):
         parent = get_object_or_404(Comment, pk=comment_id)
+        serializer = CommentCreateSerializer(data=request.data)
 
         serializer = CommentCreateSerializer(data=request.data)
         if serializer.is_valid():

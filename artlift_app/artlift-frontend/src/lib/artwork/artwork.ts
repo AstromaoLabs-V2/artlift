@@ -1,28 +1,28 @@
 
 import { Artwork } from "@/types/props";
-import { apiArtist } from "../api";
+import { apiClient } from "../api";
 
 export const artworkAPI ={
     list: () =>
-        apiArtist("/artworks/"),
+        apiClient("/artworks/"),
 
     get: (id: number | string) =>
-        apiArtist(`/artwork/${id}/`),
+        apiClient(`/artwork/${id}/`),
 
     create: (data: FormData) =>
-        apiArtist("/artwork/create/", {
+        apiClient("/artwork/create/", {
       method: "POST",
       body: data,
     }),
 
     update: (id: number | string, data:Partial<Artwork>) =>
-    apiArtist(`/artwork/${id}/`, {
+    apiClient(`/artwork/${id}/`, {
       method: "PATCH",
       body: JSON.stringify(data),
     }),
 
     delete: (id: number | string): Promise<void> =>
-    apiArtist(`/artwork/${id}/`, {
+    apiClient(`/artwork/${id}/`, {
       method: "DELETE",
     }),
 }

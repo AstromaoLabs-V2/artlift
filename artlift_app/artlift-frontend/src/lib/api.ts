@@ -1,5 +1,9 @@
+"use server"  
 
-//api calling place
+import { cookies } from "next/headers";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 export const getDiscover = async () => {
   try {
     const res = await fetch("http://127.0.0.1:8000/discover/", {
@@ -21,8 +25,41 @@ export const getDiscover = async () => {
   }
 };
 
+async function getAuthHeaders() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("access_token")?.value;
+  if (!token) {
+    throw new Error("Not authenticated");
+  }
+  return {
+    Authorization: `Bearer ${token}`,
+    "Content-Type": "application/json",
+  };
+}
+export async function apiFetch<T>(
+  endpoint: string,
+  options: RequestInit = {}
+): Promise<T> {
+  const headers = await getAuthHeaders();
+  const res = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      ...headers,
+      ...(options.headers || {}),
+    },
+    cache: "no-store",
+  });
+  if (res.status === 401) {
+    throw new Error("UNAUTHORIZED");
+  }
+  if (!res.ok) {
+    throw new Error(`API error ${res.status}`);
+  }
+  return res.json();
+}
 
-export async function apiArtist(url: string, options: RequestInit = {}) {
+
+export async function apiClient(url: string, options: RequestInit = {}) {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
 
@@ -58,31 +95,35 @@ if (res.status === 404) {
   return res.json();
 }
 
-import axios from "axios";
-import { cookies } from "next/headers";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/";
+// import { cookies } from "next/headers";
+// import axios from "axios";
 
-export const api = axios.create({
-  baseURL: API_URL,
-  withCredentials: true,
-  headers: {
-    "Content-Type": "application/json",
-  },
-});
+// const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/";
 
-export const paymentApi = {
-  createCheckoutSession: (artworkId: string) =>
-    api.post("/payments/orders/create_checkout_session/", {
-      artwork_id: artworkId,
-      success_url: `${window.location.origin}/success`,
-      cancel_url: `${window.location.origin}/artworks/${artworkId}`,
-    }),
+// export const api = axios.create({
+//   baseURL: API_URL,
+//   withCredentials: true,
+//   headers: {
+//     "Content-Type": "application/json",
+//   },
+// });
 
-  getOrders: () => api.get("/payments/orders/"),
 
-  getOrder: (id: string) => api.get(`/payments/orders/${id}/`),
 
-  refundOrder: (id: string, reason?: string) =>
-    api.post(`/payments/orders/${id}/refund/`, { reason }),
-};
+
+// export const paymentApi = {
+//   createCheckoutSession: (artworkId: string) =>
+//     api.post("/payments/orders/create_checkout_session/", {
+//       artwork_id: artworkId,
+//       success_url: `${window.location.origin}/success`,
+//       cancel_url: `${window.location.origin}/artworks/${artworkId}`,
+//     }),
+
+//   getOrders: () => api.get("/payments/orders/"),
+
+//   getOrder: (id: string) => api.get(`/payments/orders/${id}/`),
+
+//   refundOrder: (id: string, reason?: string) =>
+//     api.post(`/payments/orders/${id}/refund/`, { reason }),
+// };

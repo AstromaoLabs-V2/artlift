@@ -32,7 +32,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-linear-to-r from-[#9ac3c6] to-[#4d858d]`}
       > */}
         <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F8F8F8]`}
       >
               <ThemeProvider
                   attribute="class"

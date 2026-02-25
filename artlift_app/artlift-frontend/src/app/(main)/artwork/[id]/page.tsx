@@ -1,23 +1,18 @@
-//this page is only for viewing artwork details and share comments
-import ArtistClient from "@/components/artist/profile";
-import ArtworkDetailPage from "@/components/artworks/ArtworkClient";
 import NotFound from "@/components/auth/not-found";
 import { commentAPI } from "@/lib/comment/comment";
-import{artworkAPI} from "@/lib/artwork/artwork";
-import { getCurrentUser } from "@/lib/user/getCurrentUser";
+import { artworkAPI } from "@/lib/artwork/artwork";
 import { constructMetadata } from "@/types/props";
 import { Metadata } from "next";
+import { getCurrentUser } from "@/lib/user/getCurrentUser";
+import ArtworkDetailComponent from "@/components/artworks/ArtworkClient";
 
 export async function generateMetadata({
   params,
 }: {
   params: { id: string };
 }): Promise<Metadata> {
-  const { id } = await params; //needs to be unwrapped in docs -kai
+  const { id } = await params;
   const artwork = await artworkAPI.get(Number(id));
-
-  //console.log(artworkAPI.get(id))
-  //console.log("get id",id);
 
   if (!artwork) {
     return constructMetadata({
@@ -26,7 +21,7 @@ export async function generateMetadata({
   }
 
   return constructMetadata({
-    title: `${artwork.title} | Artworks`, //idea like facebook -kai
+    title: `${artwork.title} | Artworks`,
     description: "Sign in to your account",
     canonical: "/signin",
   });
@@ -37,22 +32,25 @@ export default async function Page({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params; //needs to be unwrapped in docs -kai
-const artwork = await artworkAPI.get(Number(id));
-//get comment
-const comments = await commentAPI.get(Number(id));
+    const { id } = await params;
 
-  if (!artwork) {
-    return <NotFound message="Artwork not found" />;
-  }
-  //const isOwnProfile = currentUser?.id === artist.user_id;
-  // return <ArtistClient artist={artist} id={id} />;
+  const artwork = await artworkAPI.get(Number(id));
+if (!artwork) return <NotFound message="Artwork not found" />;
+
+const comments = await commentAPI.get(Number(id));
+const currentUser = await getCurrentUser();
+const artist = artwork.artist;
+const isOwnProfile = currentUser?.id && artist?.user ? currentUser.id === artist.user.id : false;
+
+// this is for debugging -kai
+// if (!isOwnProfile) {
+//   console.log("debug: isOwnProfile is false");
+//   console.log("currentUser:", currentUser);
+//   console.log("artist:", artist);
+//   console.log("artwork raw:", artwork);
+// }
+
   return (
-    <ArtworkDetailPage
-      artwork={artwork} //artwork data
-      initialComments={comments} //comments data
-    //  isOwnProfile={isOwnProfile}
-    />
+    <ArtworkDetailComponent artwork={artwork} initialComments={comments} isOwnProfile={isOwnProfile} currentUser={currentUser} />
   );
 }
-

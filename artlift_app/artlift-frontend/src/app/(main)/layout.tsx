@@ -5,6 +5,7 @@ import NavBar from "@/components/nav/page";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
+import NavBarV2 from "@/components/nav/nav-v2";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,8 +33,9 @@ export default function RootLayout({
        <SidebarProvider defaultOpen={false}>
             <AppSidebar />
             <SidebarInset>
-              <NavBar />
-              <main className="p-4">{children}</main>
+              {/* <NavBar /> */}
+              <NavBarV2/>
+              <main>{children}</main>
             </SidebarInset>
           </SidebarProvider>
     </div>

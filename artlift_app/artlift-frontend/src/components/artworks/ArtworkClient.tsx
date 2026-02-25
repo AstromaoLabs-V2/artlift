@@ -1,134 +1,201 @@
-//get artwork details and comments component (form)
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
-import { getArtist } from "@/app/lib/Artists/[id]/getArtists";
-import Navigation from "@/app/components/nav/navigation";
-import { Artwork, Artist, Comments } from "@/types/props";
-import CommentHandle from "@/components/comments/CommentHandle";
-//import { getComments } from "@/app/lib/Artwork/[id]/comments/ListComments";
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { useState } from "react";
+import { Artwork, Comments, User } from "@/types/props";
+import Image from "next/image";
+import { Card, CardContent } from "../ui/card";
+import FollowButton from "../followBtn";
 
-type ArtworkClientProps ={
+type ArtworkClientProps = {
   artwork: Artwork;
   initialComments: Comments[];
-}
+  isOwnProfile?: boolean;
+  currentUser?: User;
+};
 
-export default function ArtworkDetailPage({artwork, initialComments}:ArtworkClientProps) {
-
-  const router = useRouter();
-  const [localArtwork, setArtwork] = useState(artwork);
-  //const [loading, setLoading] = useState(true);
+export default function ArtworkDetailComponent({
+  artwork,
+  initialComments,
+  isOwnProfile,
+  currentUser,
+}: ArtworkClientProps) {
   const [localComments, setLocalComments] = useState(initialComments);
+  const [replyingTo, setReplyingTo] = useState<number | null>(null);
+  const [replyText, setReplyText] = useState("");
 
-  //if new comment added, update local comments and new one is one the top
-  const handleCommentAdded = (newComment: Comments) => {
-    setLocalComments((prev) => [newComment, ...prev]);
-  };
-  
-  const handleReplyAdded = (parentId: number, newReply: Comments) => {
-    setLocalComments((prev) =>
-      prev.map((comment) =>
-        comment.id === parentId
-          ? {
-              ...comment,
-              replies: [...(comment.replies || []), newReply],
-            }
-          : comment
-      )
-    );
-  };
+const handleReplyAdded = async (parentId: number, text: string) => {
+  if (!text.trim() || !currentUser) return;
 
+  const endpoint =
+    parentId === 0
+      ? `${process.env.NEXT_PUBLIC_API_URL}/artwork/${artwork.id}/comments/create/`
+      : `${process.env.NEXT_PUBLIC_API_URL}/comments/${parentId}/reply/`;
 
-  //delete for staff
-  //const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null);
+  try {
+    const response = await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ text }),
+    });
 
-    //const fetchData = async () => {
-      //try {
- 
-    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("Comment failed:", errorText);
+      return;
+    }
 
-        // Check if current user is the owner
-       // const username = localStorage.getItem("username");
-        //if (data?.user__username === username) {
-       //   setIsOwner(true);
-       // }
+    const newCommentData: Comments = await response.json();
 
-     // }
+    if (parentId === 0) {
+      setLocalComments((prev) => [newCommentData, ...prev]);
+    } else {
+      setLocalComments((prev) =>
+        prev.map((comment) =>
+          comment.id === parentId
+            ? { ...comment, replies: [...(comment.replies || []), newCommentData] }
+            : comment
+        )
+      );
+    }
+
+    setReplyingTo(null);
+    setReplyText("");
+  } catch (err) {
+    console.error("Error adding comment/reply:", err);
+  }
+};
 
   return (
-    <>
-      <Navigation />
-      <div className="min-h-screen bg-gradient-to-r from-[#9ac3c6] to-[#4d858d] p-8">
-        <div className="max-w-6xl mx-auto">
-          {/* Artwork Detail Grid */}
-          <div className="grid grid-cols-3 gap-6 mb-12">
-            {/* Main Artwork Section */}
-            <div className="col-span-2 bg-white rounded-lg overflow-hidden shadow-lg">
-              <div className="aspect-[4/5] overflow-hidden bg-gray-200">
-                <img
-                  src={localArtwork.img}
-                  alt={localArtwork.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-
-              {/* Artwork Info */}
-              <div className="p-6">
-                <h1 className="text-3xl font-bold mb-2">{localArtwork.title}</h1>
-
-                {/* Artist Name */}
-                <p className="text-lg text-gray-600 mb-4">
-                  by{" "}
-                  <span
-                    className="font-semibold cursor-pointer hover:underline text-blue-600"
-                    onClick={() => router.push(`/artist/${localArtwork.artist__id}`)}
-                  >
-                    {/*{artist.first_name}*/}
-                  </span>
-                </p>
-
-                {/* Artwork Details */}
-                <div className="border-t pt-4 mb-4">
-                  {artwork.size && (
-                    <p className="text-sm text-gray-700 mb-2">
-                      <span className="font-semibold">Size:</span>{" "}
-                      {localArtwork.size}
-                    </p>
-                  )}
-                  <p className="text-sm text-gray-700 mb-2">
-                    <span className="font-semibold">Status:</span>{" "}
-                    {localArtwork.is_active ? "Active" : "Inactive"}
-                  </p>
-            
-                </div>
-
-                {/* Description */}
-                {localArtwork.description && (
-                  <div className="border-t pt-4 mb-6">
-                    <h3 className="font-semibold text-lg mb-2">Description</h3>
-                    <p className="text-gray-700 leading-relaxed">
-                      {localArtwork.description}
-                    </p>
-                  </div>
-                )}
-
-              </div>
-            </div>
-      
-          </div>
-
-            {/* Comments Section */}
-            <div className="comment bg-white rounded-lg shadow-lg p-6">
-            <CommentHandle
-              comments={localComments}
-              onCommentAdded={handleCommentAdded}
-               onReplyAdded={handleReplyAdded}
+    <div className="max-w-5xl mx-auto bg-[#F8F8F8] p-6 space-y-6">
+      {/* Artwork and Artist */}
+      <div className="grid gap-4 lg:grid-cols-3">
+        <div className="space-y-4 lg:col-span-2">
+          <div className="relative aspect-3/3 overflow-hidden rounded-sm">
+            <Image
+              src={artwork.img}
+              alt="Artwork"
+              fill
+              className="object-cover"
             />
           </div>
+          <Card className="shadow-none">
+            <CardContent>
+              <div className="flex items-center gap-4">
+                <span className="relative flex shrink-0 overflow-hidden rounded-full size-12">
+                  <Image
+                    src={artwork.artist.img}
+                    alt="user-avatar"
+                    fill
+                    className="aspect-square size-full object-cover"
+                  />
+                </span>
+                <div className="flex-1">
+                  <h3 className="font-semibold">
+                    {artwork.artist.first_name} {artwork.artist.last_name}
+                  </h3>
+                  <p className="text-secondary text-sm">3D artist</p>
+                </div>
+                <div className="flex gap-2">
+                  {!isOwnProfile && (
+                    <FollowButton
+                      artistId={artwork.artist.id}
+                      initialFollowing={
+                        artwork.artist.is_followed_by_current_user
+                      }
+                      className="ml-2"
+                    />
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Artwork Details */}
+        <div className="space-y-4 lg:col-span-1 text-primary">
+          <h2 className="mb-3 text-lg font-semibold text-primary">
+            {artwork.title}
+          </h2>
+          <span className="text-secondary leading-relaxed whitespace-pre-line">
+            {artwork.description}
+          </span>
         </div>
       </div>
-    </>
+
+      {/* Comments Section */}
+<div className="space-y-4">
+        <h2 className="text-lg font-semibold">Comments</h2>
+        {localComments.length === 0 && <p className="text-secondary">No comments yet. Be the first!</p>}
+
+        {localComments.map((comment) => (
+          <Card key={comment.id}>
+            <CardContent>
+              <div className="flex gap-3">
+                <span className="relative flex shrink-0 overflow-hidden rounded-full size-12">
+                  <Image
+                    src={comment.user_img || "/default-avatar.png"}
+                    alt={comment.user}
+                    fill
+                    className="aspect-square size-full object-cover"
+                  />
+                </span>
+                <div className="flex-1">
+                  <p className="font-semibold">{comment.user}</p>
+                  <p className="text-sm text-secondary">{comment.text}</p>
+
+                  <button
+                    onClick={() => setReplyingTo(comment.id)}
+                    className="mt-1 text-sm text-primary hover:underline"
+                  >
+                    Reply
+                  </button>
+
+                  {replyingTo === comment.id && (
+                    <div className="mt-2 flex gap-2">
+                      <input
+                        type="text"
+                        className="flex-1 border rounded px-2 py-1"
+                        placeholder="Write a reply..."
+                        value={replyText}
+                        onChange={(e) => setReplyText(e.target.value)}
+                      />
+                      <button
+                        onClick={() => handleReplyAdded(comment.id, replyText)}
+                        className="px-3 py-1 bg-primary text-white rounded"
+                      >
+                        Send
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Nested replies */}
+                  {comment.replies?.length > 0 && (
+                    <div className="ml-6 mt-2 space-y-2">
+                      {comment.replies.map((reply) => (
+                        <div key={reply.id} className="flex gap-3">
+                          <span className="relative flex shrink-0 overflow-hidden rounded-full size-10">
+                            <Image
+                              src={reply.user_img || "/default-avatar.png"}
+                              alt={reply.user}
+                              fill
+                              className="aspect-square size-full object-cover"
+                            />
+                          </span>
+                          <div>
+                            <p className="font-semibold text-sm">{reply.user}</p>
+                            <p className="text-sm text-secondary">{reply.text}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
   );
 }
