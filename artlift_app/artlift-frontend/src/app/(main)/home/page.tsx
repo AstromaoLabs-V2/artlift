@@ -13,6 +13,7 @@ export const metadata: Metadata = constructMetadata({
 
 export default async function Home() {
   const discover = await getDiscover();
+  console.log("Discover data:", discover);
 
   return (
     <div>

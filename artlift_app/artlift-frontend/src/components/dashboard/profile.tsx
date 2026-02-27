@@ -198,29 +198,30 @@ export default function ProfileComponent({ artist }: ProfileComponentProps) {
                   <div className="space-y-6 w-full">
                     <div className="grid gap-6 lg:grid-cols-2">
                       <Card>
-                        <CardHeader>
+                        <CardHeader className="pb-2 pt-4 px-4">
                           <CardTitle>Followers</CardTitle>
                         </CardHeader>
-                        <CardContent>{artist.followers_count}</CardContent>
+                        <CardContent className="text-sm text-muted-foreground font-medium">{artist.followers_count}</CardContent>
                       </Card>
                       <Card>
-                        <CardHeader>
+                        <CardHeader className="pb-2 pt-4 px-4">
                           <CardTitle>Following</CardTitle>
                         </CardHeader>
-                        <CardContent>{artist.followers_count}</CardContent>
+                        <CardContent className="text-sm text-muted-foreground font-medium">{artist.following_count}</CardContent>
+                        
                       </Card>
                     </div>
                     <Card>
-                      <CardHeader>
-                        <CardTitle>About</CardTitle>
+                      <CardHeader className="pt-4 px-4 pb-2">
+                        <CardTitle className="text-base">About</CardTitle>
                       </CardHeader>
-                      <CardContent>
-                        {artist.about && (
-                          <div>
-                            <p className="whitespace-pre-wrap">
-                              {artist.about}
-                            </p>
-                          </div>
+                      <CardContent className="px-4 pb-4">
+                         {artist.about ? (
+                          <p className="whitespace-pre-wrap text-sm text-muted-foreground leading-relaxed">
+                            {artist.about}
+                          </p>
+                        ) : (
+                          <p className="text-sm text-muted-foreground italic">No bio yet.</p>
                         )}
                       </CardContent>
                     </Card>

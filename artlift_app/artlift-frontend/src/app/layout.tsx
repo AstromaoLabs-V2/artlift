@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Poppins, Inter } from "next/font/google";
 import "./globals.css";
 import { constructMetadata } from "@/types/props";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -14,6 +14,20 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+
+const poppins = Poppins({
+  variable: "--font-poppins",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+
 
 export const metadata: Metadata = constructMetadata({
   title: "Artlift",
@@ -32,7 +46,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-linear-to-r from-[#9ac3c6] to-[#4d858d]`}
       > */}
         <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-[#F8F8F8]`}
+        className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${inter.variable} antialiased bg-[#F8F8F8]`}
       >
               <ThemeProvider
                   attribute="class"
