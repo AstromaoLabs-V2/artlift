@@ -1,10 +1,12 @@
 
 "use client";
 
-import { Comments } from "@/types/props";
+import { Comments, User } from "@/types/props";
 import { useState } from "react";
 import { commentAPI } from "@/lib/comment/comment";
 import CommentCard from "@/components/comments/CommentCard";
+import { Card, CardContent } from "../ui/card";
+
 
 //comments variable is data of commments
 type Props = {
@@ -12,6 +14,7 @@ type Props = {
   onCommentAdded: (newComment:Comments) => void;
   onReplyAdded: (parentId: number, newReply: Comments) => void;
   artworkId: number;
+  currentUser?: User;
 };
 
 export default function CommentHandle({
@@ -19,6 +22,7 @@ export default function CommentHandle({
   onCommentAdded,
   artworkId,
   onReplyAdded,
+  currentUser,
 }: Props) {
   const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -35,8 +39,15 @@ export default function CommentHandle({
       const formData = new FormData();
       formData.append("text", commentText);
       const newComment = await commentAPI.commentCreate(artworkId, formData);
+
+      const enrichedComment = {
+      ...newComment,
+      user: currentUser?.username ?? newComment.user,
+      user_img: currentUser?.img ?? newComment.user_img,
+    };
+    
       setCommentText("");
-      onCommentAdded(newComment); 
+      onCommentAdded(enrichedComment); 
     } catch (err) {
       console.error("Failed to add comment:", err);
       alert("Failed to add comment");
@@ -46,23 +57,45 @@ export default function CommentHandle({
   };
 
    return (
-    <div className="space-y-6">
-      <form onSubmit={handleSubmitComment}>
-        {/*may need user's icon here?"* need to see display and judge*/}
-        <textarea
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-        />
-        <button type="submit">Post</button>
-      </form>
+    <div className="w-full">
+      <h2 className="mb-1">Comments</h2>
+      <Card className="shadow-md border border-gray-300"> 
+        <CardContent className="mt-4 border-none">
+          {/* New Comment Form */}
+          <form onSubmit={handleSubmitComment} className="flex gap-2 m-2 sm:m-0">
+            <input
+              type="text"
+              className="flex-1 border rounded-2xl px-3 py-1 text-sm"
+              placeholder="Write a comment..."
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+            />
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-primary text-white px-3 py-1 rounded text-sm disabled:opacity-50 hover:bg-white hover:border-primary hover:text-primary hover:border hover:border-solid"
+            >
+              Post
+            </button>
+          </form>
 
-      {comments.map((comment) => (
-        <CommentCard
-          comment={comment}
-         onReplyAdded={onReplyAdded}  
-        />
-      ))}
+          {/* Comment List */}
+          {comments.length === 0 ? (
+            <p className="text-secondary text-sm">No comments yet. Be the first!</p>
+          ) : (
+            comments.map((comment) => (
+              <CommentCard
+                key={comment.id}
+                comment={comment}
+                onReplyAdded={onReplyAdded}
+                currentUser={currentUser}
+              />
+            ))
+          )}
+        </CardContent>
+      </Card>
     </div>
+   
      
     
   );

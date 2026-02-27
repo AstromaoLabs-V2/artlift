@@ -206,7 +206,7 @@ class CommentCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment
-        fields =  ['id', 'text', 'artwork', 'parent']
+        fields =  ['id', 'text', 'artwork', 'parent', 'user_img' ]
         read_only_fields = ['id', 'user', 'artwork', 'parent']
 
     def get_user_img(self, obj):

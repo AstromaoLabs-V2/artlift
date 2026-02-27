@@ -82,6 +82,10 @@ CORS_ALLOW_HEADERS = [
     'authorization',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:3000",
+]
+
 AUTH_USER_MODEL = "artlift.User"
 
 REST_FRAMEWORK = {
