@@ -1,4 +1,4 @@
-// dashboard/artwork/edit/page.tsx
+// edit artwork page in dashboard
 import { artworkAPI } from "@/lib/artwork/artwork";
 import { cookies } from "next/headers";
 import EditArtworkForm from "@/components/artworks/EditArtworkClient";
@@ -10,11 +10,11 @@ type PageProps = {
   };
 };
 export default async function EditPage({ params}: PageProps) {
-  const id = params.id;
+  const {id} = await params;
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
   const artwork = await artworkAPI.get(id);
-  console.log(artwork);
+
 
   if (!id) {
     return <div>Artwork ID is missing.</div>;
