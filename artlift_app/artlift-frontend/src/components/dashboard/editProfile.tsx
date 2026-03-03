@@ -7,6 +7,7 @@ import { Input } from "../ui/input";
 import { Field, FieldLabel } from "../ui/field";
 import { Button } from "../ui/button";
 import { toast } from "sonner"
+import Image from "next/image";
 
 interface EditProfileProps {
   initialData: Artist;
@@ -123,7 +124,7 @@ export default function EditProfileComponent({ initialData }: EditProfileProps) 
         ← Back
       </Button>
 
-      <h1 className="text-3xl font-bold mb-1">Edit Profile</h1>
+      <h2>Edit Profile</h2>
       <p className="text-gray-600 mb-6">Update your artist information</p>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -132,7 +133,7 @@ export default function EditProfileComponent({ initialData }: EditProfileProps) 
             <FieldLabel>Background Image</FieldLabel>
             <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden border mb-3">
               {bgPreview ? (
-                <img src={bgPreview} alt="Cover preview" className="w-full h-full object-cover" />
+                <Image src={bgPreview} alt="Cover preview" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
                   Upload cover photo
@@ -151,7 +152,7 @@ export default function EditProfileComponent({ initialData }: EditProfileProps) 
             <FieldLabel>Profile Image</FieldLabel>
             <div className="relative w-32 h-32 -mt-16 rounded-full overflow-hidden border-4 border-white shadow-lg">
               {imgPreview ? (
-                <img src={imgPreview} alt="Profile preview" className="w-full h-full object-cover" />
+                <Image src={imgPreview} alt="Profile preview" className="w-full h-full object-cover" fill />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
                   Upload icon
