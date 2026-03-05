@@ -14,7 +14,7 @@ import mimetypes
 
 from supabase import create_client, Client
 
-from .models import Artist, CartItem, Follow, Like, User, APIKey, Artwork, Comment
+from .models import Artist, ArtworkDetails, CartItem, Follow, Like, User, APIKey, Artwork, Comment
 from .serializers import ArtistSerializer, CartSerializer,  CommentCreateSerializer, CommentSerializer, FollowerSerializer, FollowingSerializer, LikeSerializer, UserSerializer, APIKeySerializer, ArtworkSerializer, LoginSerializer
 from .permissions import HasAPIKey
 
@@ -287,8 +287,8 @@ class ArtistDetailView(APIView):
     
 class ArtworkListView(APIView):
     parser_classes = [MultiPartParser, FormParser]
-    # permission_classes = [IsAuthenticated]
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    #permission_classes = [AllowAny]
 
     def get(self, request):
         qs = Artwork.objects.filter(is_active=True)
@@ -298,19 +298,31 @@ class ArtworkListView(APIView):
         file = request.FILES.get("file")  
         title = request.data.get("title")
         size = request.data.get("size", "") 
+        description = request.data.get("description", "")
+
         if not file or not title:
             return Response({"error": "Title and file are required"}, status=400)
 
         artist, _ = Artist.objects.get_or_create(user=request.user)
-
         img_url = upload_to_supabase(file) 
 
         artwork = Artwork.objects.create(
             artist=artist,
             title=title,
             size=size,
-            img=img_url
+            img=img_url,
+            description=description
         )
+
+        ArtworkDetails.objects.create(
+        artwork=artwork,
+        about=request.data.get("about", ""),
+        mood=request.data.get("mood", ""),
+        medium=request.data.get("medium", ""),
+        subject=request.data.get("subject", ""),
+        art_styles=request.data.get("art_styles", ""),
+        year_created=request.data.get("year_created") or None
+    )
 
         serializer = ArtworkSerializer(artwork)
         return Response(serializer.data, status=201)

@@ -10,7 +10,7 @@ export const artworkAPI ={
         apiClient(`/artwork/${id}/`),
 
     create: (data: FormData) =>
-        apiClient("/artwork/create/", {
+        apiClient("/artworks/", {
       method: "POST",
       body: data,
     }),

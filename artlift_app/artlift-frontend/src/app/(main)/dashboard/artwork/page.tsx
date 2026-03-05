@@ -7,7 +7,7 @@ export default async function Page() {
 
   if (!token) throw new Error("Not authenticated");
 
-  //Current user information
+  // Fetch current artist
   const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/artist/me/`, {
     headers: { Authorization: `Bearer ${token}` },
     cache: "no-store",
@@ -24,7 +24,7 @@ export default async function Page() {
 
   const currentArtist = await userRes.json();
 
-  // artwork information  fetching
+  // Fetch artworks (filtered by backend ideally)
   const artworkRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/artworks/`, {
     headers: { Authorization: `Bearer ${token}` },
     cache: "no-store",
@@ -32,11 +32,12 @@ export default async function Page() {
 
   if (!artworkRes.ok) throw new Error("Failed to fetch artworks");
 
-  const allArtworks = await artworkRes.json();
+  const artworks: any[] = await artworkRes.json();
 
-  // filter
-  const myArtworks = allArtworks.filter(
-    (artwork: any) => artwork.artist?.id === currentArtist.id
+  // If backend already filters by user, you don't need this
+  // Otherwise, frontend filtering:
+  const myArtworks = artworks.filter(
+    (artwork) => artwork.artist?.id === currentArtist.id
   );
 
   return <ArtworkListComponent artworks={myArtworks} />;

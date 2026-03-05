@@ -7,6 +7,7 @@ import { Field, FieldLabel } from "../ui/field";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import Image from "next/image";
+import { artworkAPI } from "@/lib/artwork/artwork";
 
 export default function CreateArtworkForm() {
   const router = useRouter();
@@ -14,8 +15,14 @@ export default function CreateArtworkForm() {
 
   const [formData, setFormData] = useState({
     title: "",
-    description: "",
     size: "",
+    description: "",
+    about: "",
+    mood: "",
+    medium: "",
+    subject: "",
+    art_styles: "",
+    year_created: "",
   });
 
   const [imgFile, setImgFile] = useState<File | null>(null);
@@ -40,42 +47,31 @@ export default function CreateArtworkForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!imgFile || !formData.title) {
+      toast.error("Title and image are required");
+      return;
+    }
+
     setLoading(true);
-
     try {
-      const token = document.cookie
-        .split("; ")
-        .find((row) => row.startsWith("access_token="))
-        ?.split("=")[1];
-
       const body = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
-        if (value !== null && value !== undefined) body.append(key, value);
-      });
-      if (imgFile) body.append("img", imgFile);
-
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/artworks/`,
-        {
-          method: "POST",
-          headers: { Authorization: `Bearer ${token}` },
-          body,
+        if (value !== null && value !== undefined) {
+          body.append(key, value.toString());
         }
-      );
+      });
+      body.append("file", imgFile); // must match backend -kai
 
-      if (!res.ok) {
-        toast.error("Failed to create artwork.");
-        return;
-      }
+      await artworkAPI.create(body);
 
       toast.success("Artwork created successfully!");
       setTimeout(() => {
         router.push("/dashboard/me");
         router.refresh();
       }, 1500);
-    } catch (error) {
-      console.error(error);
-      toast.error("Something went wrong.");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to create artwork.");
     } finally {
       setLoading(false);
     }
@@ -91,7 +87,6 @@ export default function CreateArtworkForm() {
       <p className="text-gray-600 mb-6">Share your artwork with the world</p>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left: Main fields */}
         <div className="lg:col-span-2 space-y-6">
           <Field>
             <FieldLabel>Artwork Image</FieldLabel>
@@ -117,22 +112,12 @@ export default function CreateArtworkForm() {
 
             <Field>
               <FieldLabel>Title</FieldLabel>
-              <Input
-                name="title"
-                value={formData.title}
-                onChange={handleChange}
-                required
-              />
+              <Input name="title" value={formData.title} onChange={handleChange} required />
             </Field>
 
             <Field>
               <FieldLabel>Size</FieldLabel>
-              <Input
-                name="size"
-                value={formData.size}
-                onChange={handleChange}
-                placeholder="e.g. 100x100cm"
-              />
+              <Input name="size" value={formData.size} onChange={handleChange} placeholder="e.g. 100x100cm" />
             </Field>
 
             <Field>
@@ -144,29 +129,57 @@ export default function CreateArtworkForm() {
                 className="w-full min-h-[120px] px-3 py-2 border rounded-md resize-y"
               />
             </Field>
+
+            <Field>
+              <FieldLabel>About</FieldLabel>
+              <textarea
+                name="about"
+                value={formData.about}
+                onChange={handleChange}
+                className="w-full min-h-[80px] px-3 py-2 border rounded-md resize-y"
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel>Mood</FieldLabel>
+              <Input name="mood" value={formData.mood} onChange={handleChange} />
+            </Field>
+
+            <Field>
+              <FieldLabel>Medium</FieldLabel>
+              <Input name="medium" value={formData.medium} onChange={handleChange} />
+            </Field>
+
+            <Field>
+              <FieldLabel>Subject</FieldLabel>
+              <Input name="subject" value={formData.subject} onChange={handleChange} />
+            </Field>
+
+            <Field>
+              <FieldLabel>Art Styles</FieldLabel>
+              <Input name="art_styles" value={formData.art_styles} onChange={handleChange} />
+            </Field>
+
+            <Field>
+              <FieldLabel>Year Created</FieldLabel>
+              <Input type="number" name="year_created" value={formData.year_created} onChange={handleChange} />
+            </Field>
           </div>
         </div>
 
-        {/* Right: Sidebar */}
         <div className="space-y-6">
           <div className="p-4 border rounded-lg shadow-sm space-y-3">
             <h3 className="font-medium text-gray-600">Artwork Details</h3>
             <p className="text-sm text-gray-400">
-              Fill in the title and description to help people discover your artwork.
+              Fill in all the fields to help people discover your artwork.
             </p>
           </div>
         </div>
-
-        {/* Bottom: Submit */}
         <div className="lg:col-span-3 flex gap-3 mt-6">
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" disabled={loading || !imgFile || !formData.title}>
             {loading ? "Uploading..." : "Upload Artwork"}
           </Button>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.push("/dashboard/me")}
-          >
+          <Button type="button" variant="outline" onClick={() => router.push("/dashboard/me")}>
             Cancel
           </Button>
         </div>

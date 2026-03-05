@@ -7,7 +7,6 @@ export default function Page({ searchParams }) {
 
   return (
     <>
-      <Navigation />
       <CreateArtworkForm artistId={artistId} />
     </>
   );
