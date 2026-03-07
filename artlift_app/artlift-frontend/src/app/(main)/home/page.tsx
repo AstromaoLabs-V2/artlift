@@ -13,12 +13,11 @@ export const metadata: Metadata = constructMetadata({
 
 export default async function Home() {
   const discover = await getDiscover();
-  console.log("Discover data:", discover);
 
   return (
     <div>
     <div className="py-5">
-      <DiscoverCarousel artworks={discover.artworks} artists={discover.artists} />
+      <DiscoverCarousel artworks={discover.artworks}/>
       
       {/* <NewArtistsSection artists={discover.artists} /> */}
       {/* <PopularArtworksSection artworks={discover.artworks} /> */}

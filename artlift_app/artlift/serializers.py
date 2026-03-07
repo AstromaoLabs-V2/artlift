@@ -141,6 +141,25 @@ class ArtworkSerializer(serializers.ModelSerializer):
     #         follower=request.user,
     #         following=obj.user
     #     ).exists()
+class BriefArtworkSerializer(serializers.ModelSerializer):
+    artist_id = serializers.UUIDField(source="artist.id", read_only=True)
+    artist_username = serializers.CharField(source="artist.user.username", read_only=True)
+    img = serializers.URLField(read_only=True)
+    likes_count = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Artwork
+        fields = [
+            "id",
+            "artist_id",
+            "artist_username",
+            "title",
+            "img",
+            "likes_count",
+        ]
+
+    def get_likes_count(self, obj):
+        return obj.likes.count()
 
 class FollowerSerializer(serializers.ModelSerializer):
     user = serializers.SerializerMethodField()

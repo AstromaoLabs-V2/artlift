@@ -8,6 +8,7 @@ from rest_framework.views import APIView
 from django.shortcuts import get_object_or_404
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.parsers import MultiPartParser, FormParser
+from django.db.models import F, Count
 
 import uuid
 import mimetypes
@@ -15,7 +16,7 @@ import mimetypes
 from supabase import create_client, Client
 
 from .models import Artist, ArtworkDetails, CartItem, Follow, Like, User, APIKey, Artwork, Comment
-from .serializers import ArtistSerializer, CartSerializer,  CommentCreateSerializer, CommentSerializer, FollowerSerializer, FollowingSerializer, LikeSerializer, UserSerializer, APIKeySerializer, ArtworkSerializer, LoginSerializer
+from .serializers import ArtistSerializer, BriefArtworkSerializer, CartSerializer,  CommentCreateSerializer, CommentSerializer, FollowerSerializer, FollowingSerializer, LikeSerializer, UserSerializer, APIKeySerializer, ArtworkSerializer, LoginSerializer
 from .permissions import HasAPIKey
 
 #views for APIKeys. feel free to ask me. -kai
@@ -285,10 +286,31 @@ class ArtistDetailView(APIView):
         artist.delete()
         return Response(status=204)
     
+class ShortArtworkDetailsViewByUser(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        artworks = list(
+    Artwork.objects
+    .filter(artist__user=request.user)
+    .annotate(likes_count=Count('likes'))
+    .values(
+        'id',
+        'title',
+        'img',
+        'likes_count',
+        'artist__id',
+        'artist__user__username',
+    )
+)
+
+        return Response(artworks)
+    
+
 class ArtworkListView(APIView):
     parser_classes = [MultiPartParser, FormParser]
     permission_classes = [IsAuthenticated]
-    #permission_classes = [AllowAny]
+    # permission_classes = [AllowAny]
 
     def get(self, request):
         qs = Artwork.objects.filter(is_active=True)
@@ -360,21 +382,23 @@ class ArtworkDetailView(APIView):
 class DiscoverView(APIView):
 
     permission_classes = [AllowAny]
+
     def get(self, request):
-        artists = list(
-            Artist.objects.select_related("user")
-            .order_by('?')[:10]
-            .values('id', 'user__username', 'img'))
-        
         artworks = list(
             Artwork.objects
-            .select_related("artist")
+            .select_related("artist__user")
             .order_by('?')[:10]
-            .values('id', 'title', 'img', "artist__user__username")
+            .values(
+                'id',
+                'title',
+                'img',
+                'artist__id',
+                'artist__img',
+                'artist__user__username',
+            )
         )
 
         return Response({
-            "artists" : artists,
             "artworks" : artworks
         })
     

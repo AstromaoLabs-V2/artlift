@@ -25,6 +25,27 @@ export const getDiscover = async () => {
   }
 };
 
+export const getAllArtworks = async () => {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/artworks/`, {
+      cache: "no-store",
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch artworks");
+    }
+
+    const data = await res.json();
+
+    const artworks = Array.isArray(data) ? data : data?.results ?? [];
+
+    return artworks;
+  } catch (error) {
+    console.error("Fetch artworks failed:", error);
+    return [];
+  }
+};
+
 async function getAuthHeaders() {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;

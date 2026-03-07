@@ -63,6 +63,7 @@ export interface Artwork {
   is_active: boolean;
   artist: Artist;
   artist__user__username: string;
+  artist__img : string;
   artist__id?: number;
   details?: ArtworkDetails ;
 }

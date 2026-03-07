@@ -247,47 +247,55 @@ export default function ProfileComponent({
               </TabsContent>
 
               <TabsContent value="2" className="mt-4">
-                {(artworks ?? []).length === 0 ? (
-                  <p className="text-gray-500 text-sm">No artworks yet.</p>
-                ) : (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                    {(artworks ?? []).map((artwork) => (
-                      <div
-                        key={artwork.id}
-                        className="group relative aspect-square overflow-hidden rounded-lg cursor-pointer"
-                      >
-                        <Link href={`/artwork/${artwork.id}`}>
-                          <Image
-                            src={artwork.img}
-                            alt={artwork.title}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                          />
-                        </Link>
-                        
-                        {/* Edit button - same style as profile edit button */}
-                        <div className="absolute end-2 top-2">
-                          <Button
-                            className="bg-background/50 rounded-full size-8"
-                            onClick={() =>
-                              router.push(
-                                `/dashboard/artwork/${artwork.id}/edit`,
-                              )
-                            }
-                            title="Edit Artwork"
+                <Card>
+                  <CardHeader className="pt-4 px-4 pb-2">
+                    <CardTitle className="text-base">Artworks</CardTitle>
+                  </CardHeader>
+
+                  <CardContent className="px-4 pb-4">
+                    {(artworks ?? []).length === 0 ? (
+                      <p className="text-gray-500 text-sm">No artworks yet.</p>
+                    ) : (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {(artworks ?? []).map((artwork) => (
+                          <div
+                            key={artwork.id}
+                            className="group relative aspect-square overflow-hidden rounded-lg cursor-pointer"
                           >
-                            <Pencil />
-                          </Button>
-                        </div>
-                        <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3 pointer-events-none">
-                          <p className="text-white text-sm font-semibold truncate">
-                            {artwork.title}
-                          </p>
-                        </div>
+                            <Link href={`/artwork/${artwork.id}`}>
+                              <Image
+                                src={artwork.img}
+                                alt={artwork.title}
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                              />
+                            </Link>
+
+                            <div className="absolute end-2 top-2">
+                              <Button
+                                className="bg-background/50 rounded-full size-8"
+                                onClick={() =>
+                                  router.push(
+                                    `/dashboard/artwork/${artwork.id}/edit`,
+                                  )
+                                }
+                                title="Edit Artwork"
+                              >
+                                <Pencil />
+                              </Button>
+                            </div>
+
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3 pointer-events-none">
+                              <p className="text-white text-sm font-semibold truncate">
+                                {artwork.title}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                )}
+                    )}
+                  </CardContent>
+                </Card>
               </TabsContent>
               <TabsContent value="3" className="mt-4">
                 commissions

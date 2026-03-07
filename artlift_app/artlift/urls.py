@@ -1,7 +1,7 @@
 
 
 from django.urls import path
-from .views import ArtistDetailView, ArtistListView, ArtworkCommentCreate, ArtworkCommentList, CommentDelete, CommentReplyCreate, CurrentArtistView, FollowStatusView, FollowView,LikeView, LikesView, UserDetailView, ArtistFollowersView, ArtistFollowingView, UserListCreateView, APIKeyCreate, APIKeyList, APIKeyDetail, ArtistCreateView, ArtworkListView, ArtworkDetailView, DiscoverView, LoginView, LogoutView, AddToCartView, CartListView, CurrentUserView
+from .views import ArtistDetailView, ArtistListView, ArtworkCommentCreate, ArtworkCommentList, CommentDelete, CommentReplyCreate, CurrentArtistView, FollowStatusView, FollowView,LikeView, LikesView, ShortArtworkDetailsViewByUser, UserDetailView, ArtistFollowersView, ArtistFollowingView, UserListCreateView, APIKeyCreate, APIKeyList, APIKeyDetail, ArtistCreateView, ArtworkListView, ArtworkDetailView, DiscoverView, LoginView, LogoutView, AddToCartView, CartListView, CurrentUserView
 from rest_framework_simplejwt.views import TokenVerifyView
 
 urlpatterns = [
@@ -25,6 +25,7 @@ urlpatterns = [
     path("artist/<uuid:pk>/", ArtistDetailView.as_view(), name="artist-detail"),
 
     path("artworks/", ArtworkListView.as_view(), name="artwork-list"),
+    path("short-artwork-details/", ShortArtworkDetailsViewByUser.as_view(), name="artwork-list"), #added this for shorter details and not fetch all details not needed
     path("artwork/<int:pk>/", ArtworkDetailView.as_view(), name="artwork-detail"), #here you will get artwork details also methods: GET specific artwork by id, edit, delete 
 
     path("discover/", DiscoverView.as_view(), name="discover"),

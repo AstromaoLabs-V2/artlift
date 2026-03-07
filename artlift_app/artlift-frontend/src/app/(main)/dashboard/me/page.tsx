@@ -28,23 +28,21 @@ export default async function Page() {
 
   const artist = await res.json();
 
-  const artworkRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/artworks/`, {
+  const artworkRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/short-artwork-details/`, {
     headers: { Authorization: `Bearer ${session}` },
     cache: "no-store",
   });
 
-  if (!artworkRes.ok) {
+ if (!artworkRes.ok) {
     throw new Error("Failed to fetch artworks");
   }
 
-  const allArtworksData = await artworkRes.json();
-  const allArtworks = Array.isArray(allArtworksData)
-    ? allArtworksData
-    : allArtworksData?.results ?? [];
+  const artworksData = await artworkRes.json();
+  const artworks = Array.isArray(artworksData)
+    ? artworksData
+    : artworksData?.results ?? [];
 
-  const myArtworks = allArtworks.filter(
-    (artwork: any) => artwork.artist?.id === artist.id
-  );
+  console.log(artworks)
 
-  return <ProfileComponent artist={artist} artworks={myArtworks} />;
+  return <ProfileComponent artist={artist} artworks={artworks} />;
 }
