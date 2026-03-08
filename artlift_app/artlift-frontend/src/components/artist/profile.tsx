@@ -52,7 +52,7 @@ export default function ArtistProfileComponent({
               <img
                 src={artist.bg}
                 alt="Background"
-                fill
+                fill={true}
                 className="object-cover"
               />
               <div className="absolute end-4 top-4">
@@ -76,7 +76,7 @@ export default function ArtistProfileComponent({
                 <img
                   src={artist.img}
                   alt="Profile"
-                  fill
+                  fill={true}
                   className="object-cover"
                 />
               </div>
@@ -123,10 +123,10 @@ export default function ArtistProfileComponent({
                  <Ellipsis className="w-5 h-5" />
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="start" className="bg-white">
-                  <DropdownMenuItem>
+                  <DropdownMenuItem className="dark:text-background dark:hover:text-white">
                     <UserIcon /> View Activity Logs
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem className="dark:text-background dark:hover:text-white">
                     <CircleX /> Block 
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -207,13 +207,13 @@ export default function ArtistProfileComponent({
                   <div className="space-y-6 w-full">
                     <div className="grid gap-6 lg:grid-cols-2">
                       <Card>
-                        <CardHeader>
+                        <CardHeader className="p-2 pb-1">
                           <CardTitle>Followers</CardTitle>
                         </CardHeader>
                         <CardContent>{artist.followers_count}</CardContent>
                       </Card>
                       <Card>
-                        <CardHeader>
+                        <CardHeader className="p-2 pb-1">
                           <CardTitle>Following</CardTitle>
                         </CardHeader>
                         <CardContent>{artist.followers_count}</CardContent>

@@ -106,7 +106,7 @@ shadow-[0px_148px_41px_rgba(0,0,0,0),0px_94px_38px_rgba(0,0,0,0),0px_53px_32px_r
               onClick={() => setTheme("dark")}
               className={`p-1.5 rounded-full transition ${
                 resolvedTheme === "dark"
-                  ? "bg-blue-500/50 border border-blue-400"
+                  ? "bg-border border border-blue-400"
                   : ""
               }`}
               aria-label="Dark mode"

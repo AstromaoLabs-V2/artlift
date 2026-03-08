@@ -107,6 +107,10 @@ h2{
  
 }
 
+.dark h3{
+  color:var(--background);
+}
+
 h3{
   font-family:var(--font-inter);
   color:var(--foreground);

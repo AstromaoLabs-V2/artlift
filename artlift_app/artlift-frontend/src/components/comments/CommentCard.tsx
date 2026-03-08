@@ -55,7 +55,7 @@ export default function CommentCard({ comment, onReplyAdded, currentUser }: Prop
       <div className="flex-1 space-y-1">
         {/* Comment Body */}
         <p className="font-semibold text-sm">{comment.user}</p>
-        <p className="text-sm text-secondary">{comment.text}</p>
+        <p className="text-sm text-secondary dark:text-gray-300">{comment.text}</p>
 
         {/* Reply Toggle */}
         <button
@@ -73,7 +73,7 @@ export default function CommentCard({ comment, onReplyAdded, currentUser }: Prop
               value={replyText}
               onChange={(e) => setReplyText(e.target.value)}
               placeholder="Write a reply..."
-              className="flex-1 border rounded px-2 py-1 text-sm"
+              className="flex-1 border rounded px-2 py-1 text-sm w-4/5"
             />
             <button
               type="submit"
@@ -100,7 +100,7 @@ export default function CommentCard({ comment, onReplyAdded, currentUser }: Prop
                 </span>
                 <div>
                   <p className="font-semibold text-xs">{reply.user}</p>
-                  <p className="text-xs text-secondary">{reply.text}</p>
+                  <p className="text-xs text-secondary dark:text-gray-300">{reply.text}</p>
                 </div>
               </div>
             ))}

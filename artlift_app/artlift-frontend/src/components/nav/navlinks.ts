@@ -7,7 +7,11 @@ import {
 
 export const links = [
   { name: "Home", href: "/home", icon: Home },
-  { name: "About", href: "/about", icon: Info },
+];
+
+//This is future usable navigation links and name
+/*
+ { name: "About", href: "/about", icon: Info },
   { name: "Account", href: "/account", icon: User },
   { name: "Upload", href: "/upload", icon: Upload },
-];
+   */

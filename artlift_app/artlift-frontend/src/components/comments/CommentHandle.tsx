@@ -58,11 +58,10 @@ export default function CommentHandle({
 
    return (
     <div className="w-full">
-      <h2 className="mb-1">Comments</h2>
       <Card className="shadow-md border border-gray-300"> 
-        <CardContent className="mt-4 border-none">
+        <CardContent className="border-none m-0 mt-2">
           {/* New Comment Form */}
-          <form onSubmit={handleSubmitComment} className="flex gap-2 m-2 sm:m-0">
+          <form onSubmit={handleSubmitComment} className="flex gap-2 mt-2 sm:m-0">
             <input
               type="text"
               className="flex-1 border rounded-2xl px-3 py-1 text-sm"
@@ -84,7 +83,8 @@ export default function CommentHandle({
             <p className="text-secondary text-sm">No comments yet. Be the first!</p>
           ) : (
             comments.map((comment) => (
-              <CommentCard
+              <CommentCard 
+              className="dark:text-white"
                 key={comment.id}
                 comment={comment}
                 onReplyAdded={onReplyAdded}

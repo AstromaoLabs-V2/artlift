@@ -41,7 +41,7 @@ export default function ArtworkListComponent({ artworks }: ArtworkListProps) {
                   <Image
                     src={artwork.img}
                     alt={artwork.title}
-                    fill
+                    fill={true}
                     className="object-cover"
                   />
                   {/* Hover overlay with edit/delete */}

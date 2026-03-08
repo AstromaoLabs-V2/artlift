@@ -76,7 +76,7 @@ export default function NavBar() {
             <button
               onClick={() => setTheme("dark")}
               className={`p-1.5 rounded-full transition ${
-                resolvedTheme === "dark" ? "bg-blue-500/50 border border-blue-400" : ""
+                resolvedTheme === "dark" ? "bg-primary border secondary" : ""
               }`}
               aria-label="Dark mode"
             >
