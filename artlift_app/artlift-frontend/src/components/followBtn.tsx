@@ -26,7 +26,7 @@ export default function FollowButton({
         if (!token) return;
 
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/artist/${artistId}/follow-status/`,
+          `${process.env.NEXT_PUBLIC_API_URL}artist/${artistId}/follow-status/`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -59,7 +59,7 @@ export default function FollowButton({
       }
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/artist/${artistId}/follow/`,
+        `${process.env.NEXT_PUBLIC_API_URL}artist/${artistId}/follow/`,
         {
           method: following ? "DELETE" : "POST",
           headers: {

@@ -92,7 +92,7 @@ export default function EditProfileComponent({ initialData }: EditProfileProps) 
         .find(row => row.startsWith("access_token="))
         ?.split("=")[1];
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/artist/${initialData.id}/`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}artist/${initialData.id}/`, {
         method: "PATCH",
         headers: { Authorization: `Bearer ${token}` },
         body,

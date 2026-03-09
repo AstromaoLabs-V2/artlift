@@ -27,7 +27,7 @@ export const getDiscover = async () => {
 
 export const getAllArtworks = async () => {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/artworks/`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}artworks/`, {
       cache: "no-store",
     });
 
