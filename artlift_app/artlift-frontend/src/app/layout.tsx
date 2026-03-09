@@ -4,6 +4,7 @@ import "./globals.css";
 import { constructMetadata } from "@/types/props";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/next"
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -57,6 +58,7 @@ export default function RootLayout({
           {children}
           <Toaster/>
           </ThemeProvider>
+          <Analytics/>
       </body>
     </html>
   );
