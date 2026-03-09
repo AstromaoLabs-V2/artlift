@@ -51,7 +51,7 @@ export default function ArtworkDetailComponent({
           </div>
           <Card className="shadow-md rounded-2xl border-none bg-white">
             <CardContent>
-              <div className=" m-2 flex items-center gap-4">
+              <div className="flex items-center gap-4">
                 <span className="relative flex shrink-0 overflow-hidden rounded-full size-12">
                   <Image
                     src={artwork.artist.img}

@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 API_KEY = os.getenv("NEXT_PUBLIC_API_KEY")
 
@@ -74,6 +74,7 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000", # frontend ro edited in prod
     # "http://127.0.0.1:8000", # backend
+    # "https://vercel" -to be edited for vercel in prod -kai
 ]
 
 CORS_ALLOW_HEADERS = [

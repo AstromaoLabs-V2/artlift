@@ -1,6 +1,10 @@
+from datetime import timezone
+
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
+from django.utils.timesince import timesince
+from django.utils import timezone
 
 from .models import CartItem, User, Artist, Artwork, APIKey, ArtworkDetails, Follow, Like, Comment
 
@@ -207,10 +211,11 @@ class CommentSerializer(serializers.ModelSerializer):
     user = serializers.StringRelatedField(read_only=True)
     replies = serializers.SerializerMethodField()
     user_img = serializers.SerializerMethodField()
+    created_at_relative = serializers.SerializerMethodField()
 
     class Meta:
         model = Comment
-        fields = ["id", "user", "user_img", "text", "created_at", "replies", "parent"]
+        fields = ["id", "user", "user_img", "text", "created_at", "replies", "parent", "created_at_relative",]
 
     def get_replies(self, obj):
         qs = obj.replies.all().order_by("created_at")
@@ -218,6 +223,30 @@ class CommentSerializer(serializers.ModelSerializer):
     
     def get_user_img(self, obj):
         return obj.user.artist.img
+    
+    def get_created_at_relative(self, obj):
+        now = timezone.now()
+        delta = now - obj.created_at
+
+        seconds = int(delta.total_seconds())
+        minutes = seconds // 60
+        hours = minutes // 60
+        days = hours // 24
+        months = days // 30
+        years = days // 365
+
+        if seconds < 60:
+            return f"{seconds}s ago"
+        elif minutes < 60:
+            return f"{minutes}m ago"
+        elif hours < 24:
+            return f"{hours}h ago"
+        elif days < 30:
+            return f"{days}d ago"
+        elif months < 12:
+            return f"{months}mo ago"
+        else:
+            return f"{years}y ago"
 
 
 class CommentCreateSerializer(serializers.ModelSerializer):
