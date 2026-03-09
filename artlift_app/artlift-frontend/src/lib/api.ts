@@ -2,11 +2,11 @@
 
 import { cookies } from "next/headers";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://artlift.onrender.com";
 
 export const getDiscover = async () => {
   try {
-    const res = await fetch("http://127.0.0.1:8000/discover/", {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}discover/`, {
       cache: "no-store",
     });
 

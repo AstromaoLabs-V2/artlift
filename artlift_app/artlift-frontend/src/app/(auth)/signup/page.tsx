@@ -19,7 +19,7 @@ export default async function Signup(){
 
   if (token) {
     const valid = await verifyJWT(token);
-   if (valid) redirect("/home");
+   if (valid) redirect("home");
   }
 
   return(
