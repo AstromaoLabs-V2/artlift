@@ -19,7 +19,6 @@ export function AppSidebar() {
   
   return (
     <Sidebar
-      open={isMobile ? openMobile : true}
     >
       <SidebarContent>
         <SidebarGroup>

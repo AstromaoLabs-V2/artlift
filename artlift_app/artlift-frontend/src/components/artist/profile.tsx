@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import FollowButton from "../followBtn";
+import Image from "next/image";
 
 type ArtistClientProps = {
   artist: Artist;
@@ -49,7 +50,7 @@ export default function ArtistProfileComponent({
         <div className="space-y-1">
           {artist.bg && (
             <div className="relative w-full h-48 bg-gray-200 rounded-lg overflow-hidden">
-              <img
+              <Image
                 src={artist.bg}
                 alt="Background"
                 fill
@@ -73,7 +74,7 @@ export default function ArtistProfileComponent({
           <div className="-mt-10 px-4 pb-4 text-center lg:-mt-14">
             {artist.img && (
               <div className="relative flex shrink-0 overflow-hidden rounded-full border-background mx-auto size-20 border-4 lg:size-28">
-                <img
+                <Image
                   src={artist.img}
                   alt="Profile"
                   fill

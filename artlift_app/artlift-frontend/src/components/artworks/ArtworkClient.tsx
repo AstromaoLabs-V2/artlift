@@ -54,7 +54,7 @@ export default function ArtworkDetailComponent({
               <div className="flex items-center gap-4">
                 <span className="relative flex shrink-0 overflow-hidden rounded-full size-12">
                   <Image
-                    src={artwork.artist.img}
+                    src={artwork.artist.img || "/default-avatar.png"}
                     alt="user-avatar"
                     fill
                     className="aspect-square size-full object-cover"

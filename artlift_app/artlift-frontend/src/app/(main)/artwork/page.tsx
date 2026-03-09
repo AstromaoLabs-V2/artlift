@@ -10,3 +10,6 @@
 //     </>
 //   );
 // }
+export default function Page() {
+  return <div>Artwork page</div>
+}
