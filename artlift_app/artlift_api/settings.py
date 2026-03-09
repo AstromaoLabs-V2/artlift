@@ -72,8 +72,8 @@ CORS_ALLOW_CREDENTIALS = True
 # CORS_EXPOSE_HEADERS = ["Set-Cookie"]
 
 CORS_ALLOWED_ORIGINS = [
-    # "http://localhost:3000", # frontend ro edited in prod
-    "https://artlift-tau.vercel.app/" # frontend prod -kai
+    "http://localhost:3000",           # for local dev -kai
+    "https://artlift-tau.vercel.app",  # for prod in backend -kai
 ]
 
 CORS_ALLOW_HEADERS = [
