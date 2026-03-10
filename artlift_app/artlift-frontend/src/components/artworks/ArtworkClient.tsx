@@ -42,23 +42,27 @@ export default function ArtworkDetailComponent({
       <div className="grid gap-4 lg:grid-cols-3 m-3">
         <div className="space-y-4 mt-2 lg:col-span-2">
           <div className="relative aspect-3/3 overflow-hidden rounded-sm">
+          {artwork.img &&
             <Image
               src={artwork.img}
               alt="Artwork"
               fill
               className="object-cover"
             />
+          }
           </div>
           <Card className="shadow-md rounded-2xl border-none bg-white">
             <CardContent>
               <div className=" m-2 flex items-center gap-4">
                 <span className="relative flex shrink-0 overflow-hidden rounded-full size-12">
-                  <Image
-                    src={artwork.artist.img}
-                    alt="user-avatar"
-                    fill
-                    className="aspect-square size-full object-cover"
-                  />
+                  {artwork.artist.img && (
+                <Image
+                  src={artwork.artist.img}
+                  alt="user-avatar"
+                  fill
+                  className="aspect-square size-full object-cover"
+                />
+              )}
                 </span>
                 <div className="flex-1">
                   <h3 className="font-semibold">

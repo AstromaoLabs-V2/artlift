@@ -15,6 +15,7 @@ type Props = {
   onReplyAdded: (parentId: number, newReply: Comments) => void;
   artworkId: number;
   currentUser?: User;
+  className?: string; 
 };
 
 export default function CommentHandle({
@@ -23,6 +24,7 @@ export default function CommentHandle({
   artworkId,
   onReplyAdded,
   currentUser,
+  
 }: Props) {
   const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);

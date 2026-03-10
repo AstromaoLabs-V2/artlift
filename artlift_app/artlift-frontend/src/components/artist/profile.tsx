@@ -1,6 +1,6 @@
 "use client";
 
-import { Artist } from "@/types/props";
+import { Artist,Artwork } from "@/types/props";
 import { useRouter } from "next/navigation";
 import {
   Mail,
@@ -29,17 +29,20 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import FollowButton from "../followBtn";
+import Image from "next/image";
 
 type ArtistClientProps = {
   artist: Artist;
   id: string;
   isOwnProfile: boolean;
+  artworks: Artwork[]
 };
 
 export default function ArtistProfileComponent({
   artist,
   id,
-  isOwnProfile
+  isOwnProfile,
+  artworks
 }: ArtistClientProps) {
   const router = useRouter();
 
@@ -49,7 +52,7 @@ export default function ArtistProfileComponent({
         <div className="space-y-1">
           {artist.bg && (
             <div className="relative w-full h-48 bg-gray-200 rounded-lg overflow-hidden">
-              <img
+              <Image
                 src={artist.bg}
                 alt="Background"
                 fill={true}
@@ -73,7 +76,7 @@ export default function ArtistProfileComponent({
           <div className="-mt-10 px-4 pb-4 text-center lg:-mt-14">
             {artist.img && (
               <div className="relative flex shrink-0 overflow-hidden rounded-full border-background mx-auto size-20 border-4 lg:size-28">
-                <img
+                <Image
                   src={artist.img}
                   alt="Profile"
                   fill={true}
@@ -220,7 +223,7 @@ export default function ArtistProfileComponent({
                       </Card>
                     </div>
                     <Card>
-                      <CardHeader>
+                      <CardHeader className="p-2 pb-1">
                         <CardTitle>About</CardTitle>
                       </CardHeader>
                       <CardContent>
@@ -238,7 +241,40 @@ export default function ArtistProfileComponent({
               </TabsContent>
 
               <TabsContent value="2" className="mt-4">
-                artworks examples here HAHA
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {artworks.map((artwork) => (
+                            <Card key={artwork.id} className="group relative overflow-hidden">
+                              <CardContent className="p-0">
+                                <div className="relative aspect-square">
+                                  <Image
+                                    src={artwork.img}
+                                    alt={artwork.title}
+                                    fill={true}
+                                    className="object-cover"
+                                  />
+                                  {/* Hover overlay with edit/delete */}
+                                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="bg-white/90"
+                                      onClick={() => router.push(`/artwork/${artwork.id}`)}
+                                    >
+                                      View Artwork
+                                    </Button>
+                                   
+                                  </div>
+                                </div>
+                                <div className="p-3">
+                                  <h3 className="font-semibold truncate artist-profile-artwork-title">{artwork.title}</h3>
+                                  {artwork.description && (
+                                    <p className="text-sm text-gray-500 mt-1 line-clamp-2 dark:text-white">{artwork.description}</p>
+                                  )}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
               </TabsContent>
             </div>
           </Tabs>

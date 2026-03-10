@@ -7,6 +7,7 @@ type Props = {
   comment: Comments;
   onReplyAdded: (parentId: number, newReply: Comments) => void;
   currentUser?: User; 
+  className?: string;
 };
 
 export default function CommentCard({ comment, onReplyAdded, currentUser }: Props) {
