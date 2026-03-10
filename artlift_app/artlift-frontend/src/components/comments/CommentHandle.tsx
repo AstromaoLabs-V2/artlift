@@ -1,5 +1,5 @@
 "use client";
-
+import CommentCard from "@/components/comments/CommentCard";
 import { Comments, User } from "@/types/props";
 import { useState } from "react";
 import { commentAPI } from "@/lib/comment/comment";
@@ -52,9 +52,29 @@ const enrichedComment = {
     } finally {
       setIsSubmitting(false);
     }
+
   };
 
-<<<<<<< HEAD
+     const handleDeleteComment = async (commentId: number) => {
+    if (!confirm("Are you sure you want to delete this comment?")) return;
+
+    // Update UI immediately
+    const originalComments = [...localComments];
+    setLocalComments((prev) => prev.filter((c) => c.id !== commentId));
+
+    try {
+      await commentAPI.delete(commentId);
+      console.log("Comment deleted successfully");
+    } catch (err) {
+      console.error("Failed to delete comment:", err);
+      alert("Failed to delete comment");
+      // Revert UI on failure
+      setLocalComments(originalComments);
+    }
+  };
+
+
+
    return (
     <div className="w-full">
       <Card className="shadow-md border border-gray-300"> 
@@ -88,6 +108,7 @@ const enrichedComment = {
                 comment={comment}
                 onReplyAdded={onReplyAdded}
                 currentUser={currentUser}
+                onDelete = {handleDeleteComment}
               />
             ))
           )}
@@ -98,25 +119,8 @@ const enrichedComment = {
      
     
   );
-=======
-   const handleDeleteComment = async (commentId: number) => {
-    if (!confirm("Are you sure you want to delete this comment?")) return;
 
-    // Update UI immediately
-    const originalComments = [...localComments];
-    setLocalComments((prev) => prev.filter((c) => c.id !== commentId));
->>>>>>> d2dc1eb9596fdd4cfc89d08f2e6f43604ef00e7a
 
-    try {
-      await commentAPI.delete(commentId);
-      console.log("Comment deleted successfully");
-    } catch (err) {
-      console.error("Failed to delete comment:", err);
-      alert("Failed to delete comment");
-      // Revert UI on failure
-      setLocalComments(originalComments);
-    }
-  };
 
 return (
   <div className="w-full">

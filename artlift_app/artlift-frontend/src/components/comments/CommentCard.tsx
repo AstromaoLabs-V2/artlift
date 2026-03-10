@@ -8,9 +8,10 @@ type Props = {
   onReplyAdded: (parentId: number, newReply: Comments) => void;
   currentUser?: User; 
   className?: string;
+  onDelete: (commentId: number) => void;
 };
 
-export default function CommentCard({ comment, onReplyAdded, currentUser }: Props) {
+export default function CommentCard({ comment, onReplyAdded, currentUser, onDelete}: Props) {
   const [replyText, setReplyText] = useState("");
   const [isReplying, setIsReplying] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -57,6 +58,10 @@ export default function CommentCard({ comment, onReplyAdded, currentUser }: Prop
         {/* Comment Body */}
         <p className="font-semibold text-sm">{comment.user}</p>
         <p className="text-sm text-secondary dark:text-gray-300">{comment.text}</p>
+        
+          {/* Actions */}
+        <div className="flex items-center gap-3 text-xs">
+          <span className="text-muted-foreground">{comment.created_at_relative}</span>
 
         {/* Reply Toggle */}
         <button
@@ -65,6 +70,17 @@ export default function CommentCard({ comment, onReplyAdded, currentUser }: Prop
         >
           Reply
         </button>
+
+        {/* Delete Button (owner only) */}
+          {comment.user === currentUser?.username && (
+            <button
+              onClick={() => onDelete(comment.id)}
+              className="text-red-500 hover:text-red-700"
+            >
+              Delete
+            </button>
+          )}
+          </div>
 
         {/* Reply Form */}
         {isReplying && (
