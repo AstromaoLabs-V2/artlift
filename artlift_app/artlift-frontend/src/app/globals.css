@@ -107,11 +107,19 @@ h2{
  
 }
 
+.dark h3{
+  color:var(--background);
+}
+
 h3{
   font-family:var(--font-inter);
   color:var(--foreground);
   font-weight:500;
   font-size:1.25em
+}
+
+.dark .artist-profile-artwork-title{
+  color:var(--foreground);
 }
 
 .dark {

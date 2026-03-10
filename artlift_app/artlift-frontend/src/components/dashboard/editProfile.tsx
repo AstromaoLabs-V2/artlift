@@ -133,7 +133,7 @@ export default function EditProfileComponent({ initialData }: EditProfileProps) 
             <FieldLabel>Background Image</FieldLabel>
             <div className="relative w-full h-48 bg-gray-100 rounded-lg overflow-hidden border mb-3">
               {bgPreview ? (
-                <Image src={bgPreview} alt="Cover preview" className="w-full h-full object-cover" />
+            <Image src={bgPreview} alt="Cover preview" fill className="object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
                   Upload cover photo

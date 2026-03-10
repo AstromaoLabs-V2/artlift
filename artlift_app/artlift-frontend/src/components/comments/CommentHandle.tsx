@@ -1,5 +1,5 @@
 "use client";
-
+import CommentCard from "@/components/comments/CommentCard";
 import { Comments, User } from "@/types/props";
 import { useState } from "react";
 import { commentAPI } from "@/lib/comment/comment";
@@ -12,6 +12,7 @@ type Props = {
   onReplyAdded: (parentId: number, newReply: Comments) => void;
   artworkId: number;
   currentUser?: User;
+  className?: string; 
 };
 
 export default function CommentHandle({
@@ -20,6 +21,7 @@ export default function CommentHandle({
   artworkId,
   onReplyAdded,
   currentUser,
+  
 }: Props) {
   const [commentText, setCommentText] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,9 +52,10 @@ const enrichedComment = {
     } finally {
       setIsSubmitting(false);
     }
+
   };
 
-   const handleDeleteComment = async (commentId: number) => {
+     const handleDeleteComment = async (commentId: number) => {
     if (!confirm("Are you sure you want to delete this comment?")) return;
 
     // Update UI immediately
@@ -69,6 +72,55 @@ const enrichedComment = {
       setLocalComments(originalComments);
     }
   };
+
+
+
+   return (
+    <div className="w-full">
+      <Card className="shadow-md border border-gray-300"> 
+        <CardContent className="border-none m-0 mt-2">
+          {/* New Comment Form */}
+          <form onSubmit={handleSubmitComment} className="flex gap-2 mt-2 sm:m-0">
+            <input
+              type="text"
+              className="flex-1 border rounded-2xl px-3 py-1 text-sm"
+              placeholder="Write a comment..."
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+            />
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="bg-primary text-white px-3 py-1 rounded text-sm disabled:opacity-50 hover:bg-white hover:border-primary hover:text-primary hover:border hover:border-solid"
+            >
+              Post
+            </button>
+          </form>
+
+          {/* Comment List */}
+          {comments.length === 0 ? (
+            <p className="text-secondary text-sm">No comments yet. Be the first!</p>
+          ) : (
+            comments.map((comment) => (
+              <CommentCard 
+              className="dark:text-white"
+                key={comment.id}
+                comment={comment}
+                onReplyAdded={onReplyAdded}
+                currentUser={currentUser}
+                onDelete = {handleDeleteComment}
+              />
+            ))
+          )}
+        </CardContent>
+      </Card>
+    </div>
+   
+     
+    
+  );
+
+
 
 return (
   <div className="w-full">

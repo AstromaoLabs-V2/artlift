@@ -1,6 +1,7 @@
 import { Artist, Artwork } from "../types/props";
 import { Button } from "./ui/button";
 import { Card, CardContent } from "./ui/card";
+import Link from "next/link";
 import {
   Carousel,
   CarouselContent,
@@ -18,6 +19,8 @@ export default function DiscoverCarousel({
   artworks,
 }: DiscoverCarouselProps) {
 
+  console.log("DiscoverCarousel artworks:", artworks);
+
   return (
     <>
       <div className="bg-amber-100 text-black space-y-6 p-6">
@@ -30,15 +33,17 @@ export default function DiscoverCarousel({
                 <div className="p-1">
                   <Card className="group relative overflow-hidden">
                     <CardContent className="relative aspect-4/5 p-0 m-0 overflow-hidden">
+                    <Link href={`/artwork/${art.id}`} className="absolute inset-0 block z-index-10">
                       <Image
                         src={art.img || "/default-artwork.png"}
                         alt={art.title}
-                        fill
+                        fill ={true}
                         className="object-cover transition-transform duration-500 ease-out group-hover:scale-110"
                         sizes="(max-width: 768px) 100vw, 25vw"
                       />
+                      </Link>
 
-                      <div className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col text-white p-6 m-0">
+                      <div className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col text-white p-6 m-0 pointer-events-none z-20">
                         <div className="flex-1 flex flex-col items-center justify-center">
                           <Image
                             src={art.artist__img} 
@@ -53,11 +58,14 @@ export default function DiscoverCarousel({
                         </div>
 
                         <div className="flex items-center justify-center">
-                          <Button variant="discover" className="h-12">
+                          <Link href={`/artist/${art.artist__id}`} className="w-full">
+                          <Button variant="discover" className="h-12 pointer-events-auto">
                             View Artist
                           </Button>
+                          </Link>
                         </div>
                       </div>
+                      
                     </CardContent>
                   </Card>
                 </div>
