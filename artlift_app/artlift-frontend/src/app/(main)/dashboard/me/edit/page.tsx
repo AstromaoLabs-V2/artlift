@@ -6,7 +6,7 @@ export default async function Page() {
   const token = cookieStore.get("access_token")?.value;
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/artist/me/`,
+    `${process.env.NEXT_PUBLIC_API_URL}artist/me/`,
     {
       headers: { Authorization: `Bearer ${token}` },
       cache: "no-store",

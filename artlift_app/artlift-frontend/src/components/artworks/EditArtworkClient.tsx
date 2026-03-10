@@ -59,7 +59,7 @@ export default function EditArtworkForm({ artwork }: EditArtworkFormProps) {
       if (imgFile) body.append("img", imgFile);
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/artwork/${artwork.id}/`,
+        `${process.env.NEXT_PUBLIC_API_URL}artwork/${artwork.id}/`,
         {
           method: "PATCH",
           headers: { Authorization: `Bearer ${token}` },

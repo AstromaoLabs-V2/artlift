@@ -8,7 +8,7 @@ export async function verifyJWT(token: string) {
   }
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/verify/`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}auth/verify/`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

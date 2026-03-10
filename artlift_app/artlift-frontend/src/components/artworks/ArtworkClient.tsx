@@ -53,8 +53,9 @@ export default function ArtworkDetailComponent({
           </div>
           <Card className="shadow-md rounded-2xl border-none bg-white">
             <CardContent>
-              <div className=" m-2 flex items-center gap-4">
+              <div className="flex items-center gap-4">
                 <span className="relative flex shrink-0 overflow-hidden rounded-full size-12">
+<<<<<<< HEAD
                   {artwork.artist.img && (
                 <Image
                   src={artwork.artist.img}
@@ -63,6 +64,14 @@ export default function ArtworkDetailComponent({
                   className="aspect-square size-full object-cover"
                 />
               )}
+=======
+                  <Image
+                    src={artwork.artist.img || "/default-avatar.png"}
+                    alt="user-avatar"
+                    fill
+                    className="aspect-square size-full object-cover"
+                  />
+>>>>>>> d2dc1eb9596fdd4cfc89d08f2e6f43604ef00e7a
                 </span>
                 <div className="flex-1">
                   <h3 className="font-semibold">

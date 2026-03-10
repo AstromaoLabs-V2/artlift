@@ -28,7 +28,7 @@ export default function UserDropdown() {
     const token = localStorage.getItem("access_token");
     if (!token) return;
 
-    fetch("http://127.0.0.1:8000/current_user/", {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}current_user/`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

@@ -7,7 +7,7 @@ export default async function Page() {
 
   if (!session) throw new Error("Not authenticated");
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/artist/me/`, {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}artist/me/`, {
     headers: { Authorization: `Bearer ${session}` },
     cache: "no-store",
   });
@@ -28,7 +28,7 @@ export default async function Page() {
 
   const artist = await res.json();
 
-  const artworkRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/short-artwork-details/`, {
+  const artworkRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}short-artwork-details/`, {
     headers: { Authorization: `Bearer ${session}` },
     cache: "no-store",
   });
