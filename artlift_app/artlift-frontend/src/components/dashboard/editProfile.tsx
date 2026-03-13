@@ -120,7 +120,7 @@ export default function EditProfileComponent({ initialData }: EditProfileProps) 
 
   return (
     <div className="max-w-6xl mx-auto p-6">
-      <Button variant="outline" onClick={() => router.back()} className="mb-4">
+      <Button variant="outline" onClick={() => router.back()} className="mb-4 dark:text-white">
         ← Back
       </Button>
 
@@ -223,7 +223,7 @@ export default function EditProfileComponent({ initialData }: EditProfileProps) 
 
         <div className="space-y-6">
           <div className="p-4 border rounded-lg shadow-sm space-y-3">
-            <h3 className="font-medium text-gray-600">Social Links</h3>
+            <h3 className="font-medium text-gray-600 dark-mode-heading-color">Social Links</h3>
             <Input
               name="social_links"
               placeholder="Twitter, Instagram, LinkedIn..."
@@ -233,7 +233,7 @@ export default function EditProfileComponent({ initialData }: EditProfileProps) 
           </div>
 
           <div className="p-4 border rounded-lg shadow-sm">
-            <h3 className="font-medium text-gray-600 mb-2">Accept Commissions</h3>
+            <h3 className="font-medium text-gray-600 mb-2 dark-mode-heading-color">Accept Commissions</h3>
             <div className="flex gap-2">
               <Button
                 variant={formData.accept_commisions ? "default" : "outline"}

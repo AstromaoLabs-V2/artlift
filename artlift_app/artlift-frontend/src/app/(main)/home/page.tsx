@@ -8,7 +8,7 @@ import { Metadata } from "next";
 export const metadata: Metadata = constructMetadata({
   title: "Artlift",
   description: "Art, Elevated.",
-  canonical: "/home",
+  canonical: "/",
 });
 
 export default async function Home() {

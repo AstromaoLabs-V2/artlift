@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 
 export const links = [
-  { name: "Home", href: "/home", icon: Home },
+  { name: "Home", href: "/", icon: Home },
 ];
 
 //This is future usable navigation links and name

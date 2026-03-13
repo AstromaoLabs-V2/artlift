@@ -19,7 +19,7 @@ export default async function Signin() {
   if (token) {
     const valid = await verifyJWT(token);
     if (valid) {
-      redirect("/home");
+      redirect("/");
     } else {
       cookieStore.delete("access_token");
     }
