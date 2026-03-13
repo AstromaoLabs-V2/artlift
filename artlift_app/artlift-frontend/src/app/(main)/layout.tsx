@@ -35,7 +35,7 @@ export default function RootLayout({
             <SidebarInset>
               {/* <NavBar /> */}
               <NavBarV2/>
-              <main className="w-full max-w-160 sm:max-w-160 md:max-w-3xl lg:max-w-5xl xl:max-w-246 mx-auto px-5 mt-3">{children}</main>
+              <main className="w-full max-w-160 sm:max-w-160 md:max-w-3xl lg:max-w-5xl xl:max-w-246 mx-auto mt-3 p-0 sm:px-5">{children}</main>
             </SidebarInset>
           </SidebarProvider>
     </div>

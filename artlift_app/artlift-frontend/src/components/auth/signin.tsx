@@ -26,7 +26,7 @@ export default function SignInComponent({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirect") || "/home";
+  const redirectTo = searchParams.get("redirect") || "/";
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,7 +55,7 @@ export default function SignInComponent({
       //this will be for client side later on -kai
       localStorage.setItem("access_token", data.access);
       localStorage.setItem("refresh_token", data.refresh);
-      router.push("/home");
+      router.push("/");
 
       document.cookie = `access_token=${data.access}; path=/`;
 

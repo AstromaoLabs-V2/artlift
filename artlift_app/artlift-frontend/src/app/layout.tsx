@@ -33,7 +33,7 @@ const inter = Inter({
 export const metadata: Metadata = constructMetadata({
   title: "Artlift",
   description: "Art, Elevated.",
-  canonical: "/home",
+  canonical: "/",
 });
 
 export default function RootLayout({

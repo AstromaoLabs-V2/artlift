@@ -111,6 +111,14 @@ h2{
   color:var(--background);
 }
 
+.dark body{
+  background-color:var(--background);
+}
+
+h3.dark-mode-heading-color{
+  color:var(--foreground);
+}
+
 h3{
   font-family:var(--font-inter);
   color:var(--foreground);

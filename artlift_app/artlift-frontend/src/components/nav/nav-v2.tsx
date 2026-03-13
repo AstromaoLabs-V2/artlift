@@ -24,17 +24,20 @@ export default function NavBarV2() {
 
   if (!mounted) return null;
 
+
+
   return (
-    <header className="sticky top-0 z-40 h-14 flex bg-[#F8F8F8]">
+    <header className="sticky top-0 z-40 h-14 flex rounded-full">
       <nav
-        className="mx-auto w-full max-w-160 sm:max-w-160 md:max-w-3xl lg:max-w-5xl xl:max-w-246 
+        className="mx-auto w-full max-w-160 sm:max-w-160 md:max-w-3xl lg:max-w-5xl xl:max-w-246  mt-3 p-0 sm:px-5
       flex flex-row items-center justify-between
       rounded-full
 border border-zinc-200
-bg-white/50
+bg-white
 backdrop-blur-2xl backdrop-opacity-90
 px-5 py-2.5
 shadow-[0px_148px_41px_rgba(0,0,0,0),0px_94px_38px_rgba(0,0,0,0),0px_53px_32px_rgba(0,0,0,0.01),0px_24px_24px_rgba(0,0,0,0.02),0px_6px_13px_rgba(0,0,0,0.02)]
+
 "
       >
         {/* thiswill be the logo icon -kai */}
@@ -89,7 +92,7 @@ shadow-[0px_148px_41px_rgba(0,0,0,0),0px_94px_38px_rgba(0,0,0,0),0px_53px_32px_r
 
         {/* this will be profile + theme buttons */}
         <div className="flex items-center gap-1.5">
-          <div className="hidden lg:inline-flex items-center rounded-full border p-1 bg-white/20 backdrop-blur-[10px] border-b border-white/30 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
+          <div className=" lg:inline-flex items-center rounded-full border p-1 bg-white/20 backdrop-blur-[10px] border-b border-white/30 shadow-[0_4px_30px_rgba(0,0,0,0.1)]">
             <button
               onClick={() => setTheme("light")}
               className={`p-1.5 rounded-full transition ${
