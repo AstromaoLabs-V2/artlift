@@ -23,7 +23,7 @@ export default function DiscoverCarousel({
 
   return (
     <>
-      <div className="bg-amber-100 text-black space-y-6 p-6">
+      <div className="text-black space-y-6 p-6">
         <Carousel>
           <CarouselContent>
             {/*logic is if user name and artwork artist name match, then show the artist into the carousel item, icon as well*/}

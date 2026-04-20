@@ -95,7 +95,8 @@ h1, h2 {
 
 h1 {
   font-size: 3em;
-  color:var( --primary);
+  line-height:1em;
+  color:var( --foreground);
 
 }
 
@@ -106,6 +107,7 @@ h2{
   line-height:1.2em;
  
 }
+
 
 .dark h3{
   color:var(--background);
@@ -128,6 +130,11 @@ h3{
 
 .dark .artist-profile-artwork-title{
   color:var(--foreground);
+}
+
+p{
+  font-family: var(--font-inter);
+  color: var(--foreground);
 }
 
 .dark {
@@ -184,5 +191,33 @@ button:disabled {
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/*Apple liquid glass effect*/
+.glass{
+  position: relative;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(2px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 2rem;
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.2), 
+  inset 0 4px 20px rgba(255, 255, 255, 0.3);
+}
+
+.glass::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2rem;
+  backdrop-filter: blur(1px);
+  box-shadow: inset -10px -8px 0px -11px rgba(255, 255, 255, 1),
+              inset 0px -9px 0px -8px rgba(255, 255, 255, 1);
+  opacity: 0.6;
+  z-index: -1;
+  filter: blur(1px) drop-shadow(10px 4px 6px black) brightness(115%);
 }
 

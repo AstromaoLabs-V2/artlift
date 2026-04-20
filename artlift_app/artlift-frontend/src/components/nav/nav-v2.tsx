@@ -29,20 +29,11 @@ export default function NavBarV2() {
   return (
     <header className="sticky top-0 z-40 h-14 flex rounded-full">
       <nav
-        className="mx-auto w-full max-w-160 sm:max-w-160 md:max-w-3xl lg:max-w-5xl xl:max-w-246  mt-3 p-0 sm:px-5
-      flex flex-row items-center justify-between
-      rounded-full
-border border-zinc-200
-bg-white
-backdrop-blur-2xl backdrop-opacity-90
-px-5 py-2.5
-shadow-[0px_148px_41px_rgba(0,0,0,0),0px_94px_38px_rgba(0,0,0,0),0px_53px_32px_rgba(0,0,0,0.01),0px_24px_24px_rgba(0,0,0,0.02),0px_6px_13px_rgba(0,0,0,0.02)]
-
-"
+        className="glass flex h-full w-full items-center justify-between rounded-full"
       >
         {/* thiswill be the logo icon -kai */}
         <div className="hidden lg:flex items-center gap-2 px-4 py-1">
-          <button className="size-8 rounded-full bg-white flex justify-center items-center">
+          <button className="size-8 rounded-full bg-purple flex justify-center items-center">
             <Paintbrush />
           </button>
         </div>
@@ -60,9 +51,10 @@ shadow-[0px_148px_41px_rgba(0,0,0,0),0px_94px_38px_rgba(0,0,0,0),0px_53px_32px_r
           lg:flex"
         >
           <div
-            className="relative
+          className="relative
           left-auto top-auto
           mt-0
+         
 
           flex items-center
           w-auto
@@ -80,7 +72,7 @@ shadow-[0px_148px_41px_rgba(0,0,0,0),0px_94px_38px_rgba(0,0,0,0),0px_53px_32px_r
                 href={link.href}
                 className={
                   pathname === link.href
-                    ? "block rounded-full px-3 py-2 text-sm leading-5 font-medium text-zinc-600"
+                    ? "block rounded-full px-3 py-2 text-sm leading-5 font-medium bg-[radial-gradient(100%_100%_at_49.74%_0%,_#FFFFFF_0%,_#2C266C_91.83%)] backdrop-blur-[58px] text-white"
                     : "block rounded-full px-3 py-2 text-sm leading-5 font-medium text-zinc-600"
                 }
               >

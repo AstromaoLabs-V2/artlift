@@ -7,7 +7,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://artlift.onrender.com
 export const getDiscover = async () => {
   try {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}discover/`, {
-      cache: "no-store",
+      next: { revalidate: 60 },
     });
 
     if (!res.ok) {
