@@ -7,10 +7,16 @@ export default async function Page() {
 
   if (!session) throw new Error("Not authenticated");
 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}artist/me/`, {
-    headers: { Authorization: `Bearer ${session}` },
-    cache: "no-store",
-  });
+  const [res, artworkRes] = await Promise.all([
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}artist/me/`, {
+      headers: { Authorization: `Bearer ${session}` },
+      next: { revalidate: 30 },
+    }),
+    fetch(`${process.env.NEXT_PUBLIC_API_URL}short-artwork-details/`, {
+      headers: { Authorization: `Bearer ${session}` },
+      next: { revalidate: 30 },
+    }),
+  ]);
 
   if (!res.ok) {
     if (res.status === 404) {
@@ -26,23 +32,14 @@ export default async function Page() {
     throw new Error("Failed to fetch artist profile");
   }
 
-  const artist = await res.json();
-
-  const artworkRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}short-artwork-details/`, {
-    headers: { Authorization: `Bearer ${session}` },
-    cache: "no-store",
-  });
-
- if (!artworkRes.ok) {
+  if (!artworkRes.ok) {
     throw new Error("Failed to fetch artworks");
   }
 
-  const artworksData = await artworkRes.json();
+  const [artist, artworksData] = await Promise.all([res.json(), artworkRes.json()]);
   const artworks = Array.isArray(artworksData)
     ? artworksData
     : artworksData?.results ?? [];
-
-  console.log(artworks)
 
   return <ProfileComponent artist={artist} artworks={artworks} />;
 }

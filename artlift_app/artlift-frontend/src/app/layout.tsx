@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono, Poppins, Inter } from "next/font/google";
 import "./globals.css";
 import { constructMetadata } from "@/types/props";
@@ -58,7 +59,7 @@ export default function RootLayout({
           {children}
           <Toaster/>
           </ThemeProvider>
-          <Analytics/> 
+          <Suspense><Analytics /></Suspense>
       </body>
     </html>
   );
