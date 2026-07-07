@@ -8,7 +8,7 @@ export default async function Page() {
   if (!token) throw new Error("Not authenticated");
 
   // Fetch current artist
-  const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/artist/me/`, {
+  const userRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}artist/me/`, {
     headers: { Authorization: `Bearer ${token}` },
     cache: "no-store",
   });
@@ -25,7 +25,7 @@ export default async function Page() {
   const currentArtist = await userRes.json();
 
   // Fetch artworks (filtered by backend ideally)
-  const artworkRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/artworks/`, {
+  const artworkRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL}artworks/`, {
     headers: { Authorization: `Bearer ${token}` },
     cache: "no-store",
   });

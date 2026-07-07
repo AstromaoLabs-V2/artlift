@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Geist, Geist_Mono, Poppins, Inter } from "next/font/google";
 import "./globals.css";
 import { constructMetadata } from "@/types/props";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,7 +34,7 @@ const inter = Inter({
 export const metadata: Metadata = constructMetadata({
   title: "Artlift",
   description: "Art, Elevated.",
-  canonical: "/home",
+  canonical: "/",
 });
 
 export default function RootLayout({
@@ -57,6 +59,7 @@ export default function RootLayout({
           {children}
           <Toaster/>
           </ThemeProvider>
+          <Suspense><Analytics /></Suspense>
       </body>
     </html>
   );

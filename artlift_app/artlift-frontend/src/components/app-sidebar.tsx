@@ -18,9 +18,9 @@ export function AppSidebar() {
   const { isMobile, openMobile, setOpenMobile } = useSidebar()
   
   return (
-    <Sidebar
-      open={isMobile ? openMobile : true}
-    >
+
+
+    <Sidebar>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel>ArtLift</SidebarGroupLabel>

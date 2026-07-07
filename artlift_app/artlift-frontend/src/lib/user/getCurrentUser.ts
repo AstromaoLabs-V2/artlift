@@ -5,7 +5,7 @@ export const getCurrentUser = async () => {
   const token = cookieStore.get("access_token")?.value;
 
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/current_user`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}current_user`, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",

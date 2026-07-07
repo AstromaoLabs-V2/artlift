@@ -29,7 +29,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 API_KEY = os.getenv("NEXT_PUBLIC_API_KEY")
 
@@ -72,8 +72,8 @@ CORS_ALLOW_CREDENTIALS = True
 # CORS_EXPOSE_HEADERS = ["Set-Cookie"]
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000", # frontend ro edited in prod
-    # "http://127.0.0.1:8000", # backend
+    "http://localhost:3000",           # for local dev -kai
+    "https://artlift-tau.vercel.app",  # for prod in backend -kai
 ]
 
 CORS_ALLOW_HEADERS = [
@@ -215,7 +215,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_URL = 'static/'
+# STATIC_URL = 'static/'
+STATIC_URL = "/static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

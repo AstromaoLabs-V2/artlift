@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 
 export async function signupAction(formData: FormData) {
-  const res = await fetch("http://127.0.0.1:8000/signup/", {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}signup/`, {
     method: "POST",
     body: formData,
   });

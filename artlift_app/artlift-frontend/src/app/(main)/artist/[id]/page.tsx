@@ -1,10 +1,13 @@
 
 import ArtistProfileComponent from "@/components/artist/profile";
 import NotFound from "@/components/auth/not-found";
+import { getDiscover } from "@/lib/api";
 import { artistAPI } from "@/lib/artist/artist";
 import { getCurrentUser } from "@/lib/user/getCurrentUser";
 import { constructMetadata } from "@/types/props";
 import { Metadata } from "next";
+import { cookies } from "next/headers";
+
 
 export async function generateMetadata({
   params,
@@ -34,10 +37,19 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params; //needs to be unwrapped in docs -kai
+    const cookieStore = await cookies();
+  const token = cookieStore.get("access_token")?.value;
   const [artist, currentUser] = await Promise.all([
     artistAPI.get(id),
     getCurrentUser(),
   ]);
+
+    // Fetch artworks (filtered by backend ideally)
+ const discoverData = await getDiscover();
+const artworks = (discoverData.artworks ?? []).filter(
+  (artwork: any) => artwork.artist__id === id
+);
+
   if (!artist) {
     return <NotFound message="Artist not found" />;
   }
@@ -48,6 +60,7 @@ export default async function Page({
       artist={artist}
       id={id}
       isOwnProfile={isOwnProfile}
+      artworks={artworks}
     />
   );
 }

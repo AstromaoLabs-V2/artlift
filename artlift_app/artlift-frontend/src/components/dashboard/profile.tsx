@@ -40,20 +40,20 @@ export default function ProfileComponent({
   const router = useRouter();
 
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="max-w-4xl mx-auto p-0 sm:p-6">
       <div className="space-y-6">
         <div className="space-y-1">
           {artist.bg && (
-            <div className="relative w-full h-48 bg-gray-200 rounded-lg overflow-hidden">
+            <div className="relative w-full h-48 bg-gray-200 rounded-lg overflow-hidden  ">
               <Image
                 src={artist.bg}
                 alt="Background"
                 fill
-                className="object-cover"
+                className="object-cover "
               />
               <div className="absolute end-4 top-4">
                 <Button
-                  className="bg-background/50 rounded-full size-8"
+                  className="bg-background/50 rounded-full size-8 p-0 sm:p-2"
                   onClick={() => router.push("/dashboard/me/edit")}
                   title="Edit Profile"
                 >
@@ -100,34 +100,34 @@ export default function ProfileComponent({
             </div>
           </div>
         </div>
-        <div className="px-4 overflow-x-hidden">
+        <div className="p-0 sm:px-4 overflow-x-hidden ">
           <Tabs defaultValue="1" className="w-full max-w-full">
-            <div className="flex items-center justify-between pb-4">
+            <div className="flex items-center justify-between pb-4 ">
               <TabsList>
-                <TabsTrigger value="1">Profile</TabsTrigger>
-                <TabsTrigger value="2">Artworks</TabsTrigger>
-                <TabsTrigger value="3">Commissions</TabsTrigger>
+                <TabsTrigger value="1" className="p-0 sm:p-2 m-1">Profile</TabsTrigger>
+                <TabsTrigger value="2" className="p-0 sm:p-2 m-1">Artworks</TabsTrigger>
+                <TabsTrigger value="3" className="p-0 sm:p-2 m-1">Commissions</TabsTrigger>
               </TabsList>
 
               <DropdownMenu>
                 <DropdownMenuTrigger className="shrink-0">
                   <Ellipsis />
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="bg-white">
-                  <DropdownMenuItem>
+                <DropdownMenuContent align="start" className="bg-white ">
+                  <DropdownMenuItem className="dark:text-background dark:hover:text-white">
                     <UserIcon /> View Activity Logs
                   </DropdownMenuItem>
-                  <DropdownMenuItem>
+                  <DropdownMenuItem className="dark:text-background dark:hover:text-white">
                     <UserIcon /> Samples
                   </DropdownMenuItem>
-                  <DropdownMenuItem
+                  <DropdownMenuItem className="dark:text-background dark:hover:text-white"
                     onClick={() => router.push("/dashboard/me/edit")}
                   >
                     <Pencil />
                     Edit Profile
                   </DropdownMenuItem>
 
-                  <DropdownMenuItem
+                  <DropdownMenuItem className="dark:text-background dark:hover:text-white"
                     onClick={() => router.push("/dashboard/artwork/create")}
                   >
                     <Pencil />
@@ -252,7 +252,7 @@ export default function ProfileComponent({
                     <CardTitle className="text-base">Artworks</CardTitle>
                   </CardHeader>
 
-                  <CardContent className="px-4 pb-4">
+                  <CardContent className="sm:px-4 sm:pb-4 p-0">
                     {(artworks ?? []).length === 0 ? (
                       <p className="text-gray-500 text-sm">No artworks yet.</p>
                     ) : (
@@ -260,7 +260,7 @@ export default function ProfileComponent({
                         {(artworks ?? []).map((artwork) => (
                           <div
                             key={artwork.id}
-                            className="group relative aspect-square overflow-hidden rounded-lg cursor-pointer"
+                            className="group relative aspect-square overflow-hidden rounded-lg cursor-pointer z-0"
                           >
                             <Link href={`/artwork/${artwork.id}`}>
                               <Image
@@ -271,9 +271,9 @@ export default function ProfileComponent({
                               />
                             </Link>
 
-                            <div className="absolute end-2 top-2">
+                            <div className="absolute end-2 top-2 z-10">
                               <Button
-                                className="bg-background/50 rounded-full size-8"
+                                className="bg-background/50 rounded-full size-8 "
                                 onClick={() =>
                                   router.push(
                                     `/dashboard/artwork/${artwork.id}/edit`,

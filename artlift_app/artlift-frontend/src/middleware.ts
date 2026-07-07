@@ -27,7 +27,7 @@ export async function middleware(req: NextRequest) {
     }
 
     if (req.nextUrl.pathname === "/signin") {
-      const redirectTo = req.nextUrl.searchParams.get("redirect") || "/home";
+      const redirectTo = req.nextUrl.searchParams.get("redirect") || "/";
       return NextResponse.redirect(new URL(redirectTo, req.url));
     }
   }

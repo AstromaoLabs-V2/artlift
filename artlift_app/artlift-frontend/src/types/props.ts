@@ -98,6 +98,7 @@ export interface Comments {
   created_at: string;
   parent: number | null;     // parent comment id for threaded replies
   replies: Comments[];       // nested replies
+  created_at_relative: string;
 }
 
 export interface CurrentUser{
