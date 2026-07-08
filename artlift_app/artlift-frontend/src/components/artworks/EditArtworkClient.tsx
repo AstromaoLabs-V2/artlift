@@ -8,6 +8,7 @@ import { Field, FieldLabel } from "../ui/field";
 import { Button } from "../ui/button";
 import { toast } from "sonner";
 import Image from "next/image";
+import CategoryPicker from "./CategoryPicker";
 
 interface EditArtworkFormProps {
   artwork: Artwork;
@@ -19,7 +20,11 @@ export default function EditArtworkForm({ artwork }: EditArtworkFormProps) {
   const [formData, setFormData] = useState({
     title: artwork.title || "",
     description: artwork.description || "",
+    about: artwork.details?.about || "",
   });
+  const [categoryIds, setCategoryIds] = useState<number[]>(
+    artwork.categories?.map((category) => category.id) || []
+  );
 
   const [imgFile, setImgFile] = useState<File | null>(null);
   const [imgPreview, setImgPreview] = useState<string>(artwork.img || "");
@@ -56,6 +61,7 @@ export default function EditArtworkForm({ artwork }: EditArtworkFormProps) {
       Object.entries(formData).forEach(([key, value]) => {
         if (value !== null && value !== undefined) body.append(key, value);
       });
+      categoryIds.forEach((id) => body.append("category_ids", id.toString()));
       if (imgFile) body.append("img", imgFile);
 
       const res = await fetch(
@@ -130,6 +136,22 @@ export default function EditArtworkForm({ artwork }: EditArtworkFormProps) {
             onChange={handleChange}
             className="w-full min-h-[120px] px-3 py-2 border rounded-md resize-y"
           />
+        </Field>
+
+        <Field>
+          <FieldLabel>Artist&apos;s Note</FieldLabel>
+          <textarea
+            name="about"
+            value={formData.about}
+            onChange={handleChange}
+            placeholder="Share the story or feeling behind this piece"
+            className="w-full min-h-[100px] px-3 py-2 border rounded-md resize-y"
+          />
+        </Field>
+
+        <Field>
+          <FieldLabel>Categories</FieldLabel>
+          <CategoryPicker selected={categoryIds} onChange={setCategoryIds} />
         </Field>
 
         <div className="flex gap-3">

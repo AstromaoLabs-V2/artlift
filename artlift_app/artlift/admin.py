@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, APIKey
+from .models import User, APIKey, Category
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
@@ -9,3 +9,8 @@ class UserAdmin(admin.ModelAdmin):
 class APIKeyAdmin(admin.ModelAdmin):
     list_display = ('id','name','key','revoked','created_at')
     readonly_fields = ('key','created_at')
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'type')
+    list_filter = ('type',)

@@ -26,6 +26,8 @@ class User(AbstractUser):
         unique=True
     )
     joined_date = models.DateTimeField(auto_now_add=True)
+    google_sub = models.CharField(max_length=255, unique=True, null=True, blank=True)
+    auth_provider = models.CharField(max_length=20, default="email")
 
     def __str__(self):
         return self.username
@@ -52,6 +54,20 @@ class Artist(models.Model):
     def __str__(self):
          return f"{self.user.username} - Artist"
 
+class Category(models.Model):
+    class CategoryType(models.TextChoices):
+        MOOD = "mood", "Mood"
+        ART_STYLE = "art_style", "Category of Art"
+
+    name = models.CharField(max_length=100)
+    type = models.CharField(max_length=20, choices=CategoryType.choices)
+
+    class Meta:
+        unique_together = ("name", "type")
+
+    def __str__(self):
+        return f"{self.name} ({self.type})"
+
 class Artwork(models.Model):
     artist = models.ForeignKey(Artist, related_name="artworks", on_delete=models.CASCADE)
     title = models.CharField(max_length=255)
@@ -60,20 +76,19 @@ class Artwork(models.Model):
     description = models.TextField(blank=True)
     is_popular = models.BooleanField(default=False)
     is_active = models.BooleanField(default=False)
+    categories = models.ManyToManyField(Category, blank=True, related_name="artworks")
     # price = models.BigIntegerField
 
     def __str__(self):
         return self.title
-    
+
 class ArtworkDetails(models.Model):
     artwork = models.OneToOneField(Artwork, on_delete=models.CASCADE, related_name="details")
     about = models.TextField(blank=True)
-    mood = models.CharField(max_length=255, blank=True)
     medium = models.CharField(max_length=255, blank=True)
     subject = models.CharField(max_length=255, blank=True)
-    art_styles = models.CharField(max_length=255, blank=True)
-    year_created = models.IntegerField(blank=True)
-    
+    year_created = models.IntegerField(blank=True, null=True)
+
     def __str__(self):
         return self.subject
     

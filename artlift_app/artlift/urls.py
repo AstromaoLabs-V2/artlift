@@ -1,7 +1,7 @@
 
 
 from django.urls import path
-from .views import ArtistDetailView, ArtistListView, ArtworkCommentCreate, ArtworkCommentList, CommentDelete, CommentReplyCreate, CurrentArtistView, FollowStatusView, FollowView,LikeView, LikesView, ShortArtworkDetailsViewByUser, UserDetailView, ArtistFollowersView, ArtistFollowingView, UserListCreateView, APIKeyCreate, APIKeyList, APIKeyDetail, ArtistCreateView, ArtworkListView, ArtworkDetailView, DiscoverView, LoginView, LogoutView, AddToCartView, CartListView, CurrentUserView
+from .views import ArtistDetailView, ArtistListView, ArtworkCommentCreate, ArtworkCommentList, CommentDelete, CommentReplyCreate, CurrentArtistView, FollowStatusView, FollowView,LikeView, LikesView, ShortArtworkDetailsViewByUser, UserDetailView, ArtistFollowersView, ArtistFollowingView, UserListCreateView, APIKeyCreate, APIKeyList, APIKeyDetail, ArtistCreateView, ArtworkListView, ArtworkDetailView, DiscoverView, LoginView, LogoutView, AddToCartView, CartListView, CurrentUserView, GoogleLoginView, CategoryListView
 from rest_framework_simplejwt.views import TokenVerifyView
 
 urlpatterns = [
@@ -12,6 +12,7 @@ urlpatterns = [
     # path("login/", TokenObtainPairView.as_view(), name="login"),
     path("signup/", UserListCreateView.as_view(), name="users"),
     path("login/", LoginView.as_view(), name="login"),
+    path("auth/google/", GoogleLoginView.as_view(), name="google-login"),
     path("logout/", LogoutView.as_view(), name="logout"),
     path("auth/verify/", TokenVerifyView.as_view()),
     
@@ -23,6 +24,8 @@ urlpatterns = [
     path("artists/", ArtistListView.as_view(), name="artist-list"),
     path("artist/create/", ArtistCreateView.as_view(), name="artist-create"),
     path("artist/<uuid:pk>/", ArtistDetailView.as_view(), name="artist-detail"),
+
+    path("categories/", CategoryListView.as_view(), name="category-list"),
 
     path("artworks/", ArtworkListView.as_view(), name="artwork-list"),
     path("short-artwork-details/", ShortArtworkDetailsViewByUser.as_view(), name="artwork-list"), #added this for shorter details and not fetch all details not needed
