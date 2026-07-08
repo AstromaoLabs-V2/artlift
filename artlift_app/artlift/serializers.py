@@ -1,12 +1,15 @@
 from datetime import timezone
 
+from django.conf import settings
+from google.oauth2 import id_token as google_id_token
+from google.auth.transport import requests as google_requests
 from rest_framework import serializers
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework_simplejwt.tokens import RefreshToken, TokenError
 from django.utils.timesince import timesince
 from django.utils import timezone
 
-from .models import CartItem, User, Artist, Artwork, APIKey, ArtworkDetails, Follow, Like, Comment
+from .models import CartItem, User, Artist, Artwork, APIKey, ArtworkDetails, Follow, Like, Comment, Category
 
 class APIKeySerializer(serializers.ModelSerializer):
     class Meta:
@@ -54,6 +57,22 @@ class LoginSerializer(serializers.Serializer):
         else:
             raise serializers.ValidationError("Must include username and password")
         
+class GoogleAuthSerializer(serializers.Serializer):
+    credential = serializers.CharField(write_only=True)
+
+    def validate_credential(self, credential):
+        try:
+            payload = google_id_token.verify_oauth2_token(
+                credential, google_requests.Request(), settings.GOOGLE_CLIENT_ID
+            )
+        except ValueError:
+            raise serializers.ValidationError("Invalid Google credential")
+
+        if not payload.get("email_verified"):
+            raise serializers.ValidationError("Google email is not verified")
+
+        return payload
+
 class LogoutSerializer(serializers.Serializer):
     refresh = serializers.CharField()
 
@@ -109,14 +128,20 @@ class ArtworkDetailsSerializer(serializers.ModelSerializer):
         model = ArtworkDetails
         fields = '__all__'
 
+class CategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['id', 'name', 'type']
+
 class ArtworkSerializer(serializers.ModelSerializer):
     artist = ArtistSerializer(read_only = True)
     img = serializers.URLField(read_only=True)
     details = ArtworkDetailsSerializer(read_only=True)
+    categories = CategorySerializer(many=True, read_only=True)
     likes_count = serializers.SerializerMethodField()
-    user_id = serializers.UUIDField(source="user.id", read_only=True) 
+    user_id = serializers.UUIDField(source="user.id", read_only=True)
     # is_followed_by_current_user = serializers.SerializerMethodField()
-    
+
 
     class Meta:
        model  = Artwork
@@ -130,9 +155,10 @@ class ArtworkSerializer(serializers.ModelSerializer):
             'is_popular',
             'is_active',
             'details',
-            'likes_count', 
+            'categories',
+            'likes_count',
             'user_id',
-            # 'is_followed_by_current_user', 
+            # 'is_followed_by_current_user',
         ]
     
     def get_likes_count(self, obj):

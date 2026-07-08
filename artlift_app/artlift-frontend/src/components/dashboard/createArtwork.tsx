@@ -8,20 +8,20 @@ import { Button } from "../ui/button";
 import { toast } from "sonner";
 import Image from "next/image";
 import { artworkAPI } from "@/lib/artwork/artwork";
+import CategoryPicker from "@/components/artworks/CategoryPicker";
 
 export default function CreateArtworkForm() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [categoryIds, setCategoryIds] = useState<number[]>([]);
 
   const [formData, setFormData] = useState({
     title: "",
     size: "",
     description: "",
     about: "",
-    mood: "",
     medium: "",
     subject: "",
-    art_styles: "",
     year_created: "",
   });
 
@@ -60,6 +60,7 @@ export default function CreateArtworkForm() {
           body.append(key, value.toString());
         }
       });
+      categoryIds.forEach((id) => body.append("category_ids", id.toString()));
       body.append("file", imgFile); // must match backend -kai
 
       await artworkAPI.create(body);
@@ -131,18 +132,19 @@ export default function CreateArtworkForm() {
             </Field>
 
             <Field>
-              <FieldLabel>About</FieldLabel>
+              <FieldLabel>Artist&apos;s Note</FieldLabel>
               <textarea
                 name="about"
                 value={formData.about}
                 onChange={handleChange}
+                placeholder="Share the story or feeling behind this piece"
                 className="w-full min-h-[80px] px-3 py-2 border rounded-md resize-y"
               />
             </Field>
 
             <Field>
-              <FieldLabel>Mood</FieldLabel>
-              <Input name="mood" value={formData.mood} onChange={handleChange} />
+              <FieldLabel>Categories</FieldLabel>
+              <CategoryPicker selected={categoryIds} onChange={setCategoryIds} />
             </Field>
 
             <Field>
@@ -153,11 +155,6 @@ export default function CreateArtworkForm() {
             <Field>
               <FieldLabel>Subject</FieldLabel>
               <Input name="subject" value={formData.subject} onChange={handleChange} />
-            </Field>
-
-            <Field>
-              <FieldLabel>Art Styles</FieldLabel>
-              <Input name="art_styles" value={formData.art_styles} onChange={handleChange} />
             </Field>
 
             <Field>

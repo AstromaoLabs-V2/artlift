@@ -55,6 +55,18 @@ export default function DiscoverCarousel({
                           <p className="p-2 font-semibold">
                             {art.artist__user__username}
                           </p>
+                          {art.categories && art.categories.length > 0 && (
+                            <div className="flex flex-wrap justify-center gap-1.5">
+                              {art.categories.map((category) => (
+                                <span
+                                  key={category.id}
+                                  className="text-xs rounded-full border border-white/50 px-2 py-0.5"
+                                >
+                                  {category.name}
+                                </span>
+                              ))}
+                            </div>
+                          )}
                         </div>
 
                         <div className="flex items-center justify-center">

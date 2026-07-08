@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'artlift',
     'payments',
     'django_extensions',
+    'axes',
 ]
 
 MIDDLEWARE = [
@@ -60,7 +61,17 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'axes.middleware.AxesMiddleware', #must stay last -kai
 ]
+
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesStandaloneBackend', #must stay first -kai
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = timedelta(minutes=15)
+AXES_LOCKOUT_PARAMETERS = ["username"]
 
 # REST_FRAMEWORK = {
 #     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -96,6 +107,14 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
         #  'rest_framework.permissions.AllowAny',
     ), # this is to make sure that all endpoints are protected by default -kai
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.ScopedRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'login': '5/min',
+        'signup': '5/min',
+        'google-login': '10/min',
+    },
 }
 
 # Simple JWT settings
@@ -112,6 +131,8 @@ SIMPLE_JWT = {
 STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY')
 STRIPE_PUBLISHABLE_KEY = config('STRIPE_PUBLISHABLE_KEY')
 STRIPE_WEBHOOK_SECRET =config('STRIPE_WEBHOOK_SECRET')
+
+GOOGLE_CLIENT_ID = config('GOOGLE_CLIENT_ID')
 
 # Frontend URL for redirects
 FRONTEND_URL = config('FRONTEND_URL', default='http://localhost:3000')

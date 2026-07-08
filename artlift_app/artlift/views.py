@@ -1,5 +1,5 @@
 import os
-from django.db import connection
+from django.db import connection, transaction
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.response import Response
@@ -15,8 +15,8 @@ import mimetypes
 
 from supabase import create_client, Client
 
-from .models import Artist, ArtworkDetails, CartItem, Follow, Like, User, APIKey, Artwork, Comment
-from .serializers import ArtistSerializer, BriefArtworkSerializer, CartSerializer,  CommentCreateSerializer, CommentSerializer, FollowerSerializer, FollowingSerializer, LikeSerializer, UserSerializer, APIKeySerializer, ArtworkSerializer, LoginSerializer
+from .models import Artist, ArtworkDetails, CartItem, Follow, Like, User, APIKey, Artwork, Comment, Category
+from .serializers import ArtistSerializer, BriefArtworkSerializer, CartSerializer,  CommentCreateSerializer, CommentSerializer, FollowerSerializer, FollowingSerializer, LikeSerializer, UserSerializer, APIKeySerializer, ArtworkSerializer, LoginSerializer, GoogleAuthSerializer, CategorySerializer
 from .permissions import HasAPIKey
 
 #views for APIKeys. feel free to ask me. -kai
@@ -60,6 +60,7 @@ class APIKeyDetail(APIView):
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
+    throttle_scope = 'login'
 
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -90,6 +91,64 @@ class LoginView(APIView):
 
         return Response(serializer.errors, status=400)
 
+class GoogleLoginView(APIView):
+    permission_classes = [AllowAny]
+    throttle_scope = 'google-login'
+
+    def post(self, request):
+        serializer = GoogleAuthSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=400)
+
+        payload = serializer.validated_data['credential']
+        google_sub = payload['sub']
+        email = payload['email']
+
+        user = User.objects.filter(google_sub=google_sub).first()
+
+        if not user:
+            user = User.objects.filter(email=email).first()
+            if user:
+                user.google_sub = google_sub
+                user.save(update_fields=['google_sub'])
+            else:
+                base_username = email.split('@')[0]
+                username = base_username
+                suffix = 1
+                while User.objects.filter(username=username).exists():
+                    username = f"{base_username}{suffix}"
+                    suffix += 1
+
+                user = User(
+                    username=username,
+                    email=email,
+                    google_sub=google_sub,
+                    auth_provider="google",
+                )
+                user.set_unusable_password()
+                user.save()
+
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+
+        response = Response({
+            "user": UserSerializer(user).data,
+            "refresh": str(refresh),
+            "access": access_token,
+        })
+
+        response.set_cookie(
+        key="access_token",
+        value=access_token,
+        httponly=True,
+        samesite="lax",
+        secure=False,   #to be True in prod -kai
+        domain="localhost", #to edited in prod -kai
+        max_age=3600,          #will be edited in prod -kai
+        )
+
+        return response
+
 class LogoutView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -100,6 +159,7 @@ class LogoutView(APIView):
 
 class UserListCreateView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
+    throttle_scope = 'signup'
 
     def get(self, request): #to be removed this should be for admin only
         users = User.objects.all()
@@ -305,7 +365,25 @@ class ShortArtworkDetailsViewByUser(APIView):
 )
 
         return Response(artworks)
-    
+
+def parse_category_ids(category_ids):
+    """Validates raw category_ids input. Returns (parsed_ids, error_response)."""
+    if len(category_ids) > 3:
+        return None, Response({"error": "You can select up to 3 categories only"}, status=400)
+
+    try:
+        return [int(cid) for cid in category_ids], None
+    except (TypeError, ValueError):
+        return None, Response({"error": "category_ids must be numeric"}, status=400)
+
+
+class CategoryListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        categories = Category.objects.all().order_by('type', 'name')
+        return Response(CategorySerializer(categories, many=True).data)
+
 
 class ArtworkListView(APIView):
     parser_classes = [MultiPartParser, FormParser]
@@ -317,34 +395,40 @@ class ArtworkListView(APIView):
         return Response(ArtworkSerializer(qs, many=True).data)
 
     def post(self, request):
-        file = request.FILES.get("file")  
+        file = request.FILES.get("file")
         title = request.data.get("title")
-        size = request.data.get("size", "") 
+        size = request.data.get("size", "")
         description = request.data.get("description", "")
 
         if not file or not title:
             return Response({"error": "Title and file are required"}, status=400)
 
+        category_ids, error_response = parse_category_ids(request.data.getlist("category_ids"))
+        if error_response:
+            return error_response
+
         artist, _ = Artist.objects.get_or_create(user=request.user)
-        img_url = upload_to_supabase(file) 
+        img_url = upload_to_supabase(file)
 
-        artwork = Artwork.objects.create(
-            artist=artist,
-            title=title,
-            size=size,
-            img=img_url,
-            description=description
-        )
+        with transaction.atomic():
+            artwork = Artwork.objects.create(
+                artist=artist,
+                title=title,
+                size=size,
+                img=img_url,
+                description=description
+            )
 
-        ArtworkDetails.objects.create(
-        artwork=artwork,
-        about=request.data.get("about", ""),
-        mood=request.data.get("mood", ""),
-        medium=request.data.get("medium", ""),
-        subject=request.data.get("subject", ""),
-        art_styles=request.data.get("art_styles", ""),
-        year_created=request.data.get("year_created") or None
-    )
+            if category_ids:
+                artwork.categories.set(Category.objects.filter(id__in=category_ids))
+
+            ArtworkDetails.objects.create(
+                artwork=artwork,
+                about=request.data.get("about", ""),
+                medium=request.data.get("medium", ""),
+                subject=request.data.get("subject", ""),
+                year_created=request.data.get("year_created") or None
+            )
 
         serializer = ArtworkSerializer(artwork)
         return Response(serializer.data, status=201)
@@ -360,20 +444,37 @@ class ArtworkDetailView(APIView):
     def patch(self, request, pk):
         artwork = get_object_or_404(Artwork, pk=pk)
 
-        if artwork.artist != request.user and not request.user.is_staff:
+        if artwork.artist.user != request.user and not request.user.is_staff:
             return Response({"detail": "Forbidden"}, status=403)
+
+        category_ids = (
+            request.data.getlist("category_ids")
+            if hasattr(request.data, "getlist")
+            else request.data.get("category_ids")
+        )
+        about = request.data.get("about")
+
+        if category_ids is not None:
+            category_ids, error_response = parse_category_ids(category_ids)
+            if error_response:
+                return error_response
 
         serializer = ArtworkSerializer(artwork, request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        
+            if category_ids is not None:
+                artwork.categories.set(Category.objects.filter(id__in=category_ids))
+            if about is not None:
+                artwork.details.about = about
+                artwork.details.save(update_fields=["about"])
+            return Response(ArtworkSerializer(artwork).data)
+
         return Response(serializer.errors, status=400)
     
     def delete(self, request, pk):
         artwork = get_object_or_404(Artwork, pk=pk)
 
-        if artwork.artist != request.user and not request.user.is_staff:
+        if artwork.artist.user != request.user and not request.user.is_staff:
             return Response({"detail": "Forbidden"}, status=403)
 
         artwork.delete()
@@ -384,10 +485,40 @@ class DiscoverView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
+        preferred_ids = []
+
+        if request.user.is_authenticated:
+            liked_category_ids = list(
+                Category.objects.filter(artworks__likes__user=request.user)
+                .values_list('id', flat=True)
+                .distinct()
+            )
+
+            if liked_category_ids:
+                preferred_ids = list(
+                    Artwork.objects
+                    .filter(is_active=True, categories__id__in=liked_category_ids)
+                    .exclude(likes__user=request.user)
+                    .distinct()
+                    .order_by('?')
+                    .values_list('id', flat=True)[:7]
+                )
+
+        random_ids = list(
+            Artwork.objects
+            .filter(is_active=True)
+            .exclude(id__in=preferred_ids)
+            .order_by('?')
+            .values_list('id', flat=True)[:10 - len(preferred_ids)]
+        )
+
+        artwork_ids = preferred_ids + random_ids
+
         artworks = list(
             Artwork.objects
+            .filter(id__in=artwork_ids)
             .select_related("artist__user")
-            .order_by('?')[:10]
+            .order_by('?')
             .values(
                 'id',
                 'title',
@@ -397,6 +528,20 @@ class DiscoverView(APIView):
                 'artist__user__username',
             )
         )
+
+        category_rows = Category.objects.filter(artworks__id__in=artwork_ids).values(
+            'artworks__id', 'id', 'name', 'type'
+        )
+        categories_by_artwork = {}
+        for row in category_rows:
+            categories_by_artwork.setdefault(row['artworks__id'], []).append({
+                'id': row['id'],
+                'name': row['name'],
+                'type': row['type'],
+            })
+
+        for artwork in artworks:
+            artwork['categories'] = categories_by_artwork.get(artwork['id'], [])
 
         return Response({
             "artworks" : artworks

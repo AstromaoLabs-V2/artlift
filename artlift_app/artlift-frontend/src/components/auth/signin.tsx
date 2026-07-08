@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import {
   Card,
   CardContent,
@@ -15,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { FieldDescription } from "@/components/ui/field";
+import { setAuthCookies } from "@/lib/auth-cookies";
 
 export default function SignInComponent({
   className,
@@ -66,6 +68,33 @@ export default function SignInComponent({
     }
   };
 
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    setError("");
+    setIsLoading(true);
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}auth/google/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ credential: credentialResponse.credential }),
+      });
+
+      if (!res.ok) {
+        setError("Google sign in failed");
+        setIsLoading(false);
+        return;
+      }
+
+      const data = await res.json();
+      setAuthCookies(data.access, data.refresh);
+      router.push(redirectTo);
+    } catch (err) {
+      setError("Google sign in failed. Please try again.");
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
           <Card className="">
@@ -109,6 +138,17 @@ export default function SignInComponent({
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? "Logging in..." : "Login"}
                   </Button>
+                  <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+                    <span className="bg-card text-muted-foreground relative z-10 px-2">
+                      Or continue with
+                    </span>
+                  </div>
+                  <div className="flex justify-center">
+                    <GoogleLogin
+                      onSuccess={handleGoogleSuccess}
+                      onError={() => setError("Google sign in failed")}
+                    />
+                  </div>
                 </div>
                 <div className="mt-4 text-center text-sm">
                   Don&apos;t have an account?{" "}

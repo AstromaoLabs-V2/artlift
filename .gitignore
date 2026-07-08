@@ -20,3 +20,6 @@ staticfiles/
 node_modules/
 .env
 venv/
+
+# macOS
+.DS_Store

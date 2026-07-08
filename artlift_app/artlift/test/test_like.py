@@ -1,6 +1,6 @@
 from rest_framework.test import APITestCase, APIClient
 from django.contrib.auth import get_user_model
-from artlift.models import Artwork, Artist, Like
+from artlift.models import Artwork, Like
 
 User = get_user_model()
 
@@ -9,13 +9,14 @@ class LikeAPITest(APITestCase):
         self.user = User.objects.create_user(username="kai2", password="Hehe123@")
         self.other_user = User.objects.create_user(username="sota2", password="Hehe123@")
 
-        self.artist = Artist.objects.create(
-            user=self.other_user,
-            first_name="Sota",
-            last_name="Test",
-            accept_commisions=True,
-            is_verified = True
-        )
+        # signals.py already auto-creates an Artist via post_save when a User is
+        # created, so update it here rather than creating a second, colliding one.
+        self.artist = self.other_user.artist
+        self.artist.first_name = "Sota"
+        self.artist.last_name = "Test"
+        self.artist.accept_commisions = True
+        self.artist.is_verified = True
+        self.artist.save()
 
         self.artwork = Artwork.objects.create(
             title="test art",

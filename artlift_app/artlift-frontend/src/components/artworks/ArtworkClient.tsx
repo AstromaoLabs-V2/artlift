@@ -94,9 +94,31 @@ export default function ArtworkDetailComponent({
             <h3>
               {artwork.title}
             </h3>
+
+            {artwork.details?.about && (
+              <blockquote className="my-4 border-l-4 border-primary pl-4 italic text-lg leading-relaxed">
+                &ldquo;{artwork.details.about}&rdquo;
+                <footer className="mt-2 text-sm not-italic text-secondary">
+                  — {artwork.artist.first_name} {artwork.artist.last_name}
+                </footer>
+              </blockquote>
+            )}
+
             <span className="text-secondary leading-relaxed whitespace-pre-line">
               {artwork.description}
             </span>
+            {artwork.categories && artwork.categories.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {artwork.categories.map((category) => (
+                  <span
+                    key={category.id}
+                    className="text-xs rounded-full border px-3 py-1 text-secondary"
+                  >
+                    {category.name}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Comments Section */}

@@ -66,15 +66,22 @@ export interface Artwork {
   artist__img : string;
   artist__id?: number;
   details?: ArtworkDetails ;
+  categories?: Category[];
 }
 
 export type ArtworkDetails = {
   about: string
-  mood: string
   medium: string
   subject: string
-  art_styles: string
   year_created: number
+}
+
+export type CategoryType = "mood" | "art_style";
+
+export interface Category {
+  id: number;
+  name: string;
+  type: CategoryType;
 }
 
 export interface Errors {

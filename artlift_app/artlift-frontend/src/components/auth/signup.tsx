@@ -10,6 +10,8 @@ import { Label } from "@radix-ui/react-label";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { setAuthCookies } from "@/lib/auth-cookies";
 
 export default function SignUpComponent({
   className,
@@ -63,6 +65,35 @@ export default function SignUpComponent({
     toast.success("Profile created successfully!");
     router.push("/signin");
       
+    } catch (err) {
+      setErrors({ error: "Network error. Please try again." });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSuccess = async (credentialResponse: CredentialResponse) => {
+    setLoading(true);
+    setErrors({});
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}auth/google/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ credential: credentialResponse.credential }),
+      });
+
+      const result = await res.json();
+
+      if (!res.ok) {
+        setErrors({ error: "Google sign up failed" });
+        return;
+      }
+
+      setAuthCookies(result.access, result.refresh);
+      toast.success("Signed up with Google successfully!");
+      router.push("/");
     } catch (err) {
       setErrors({ error: "Network error. Please try again." });
     } finally {
@@ -187,6 +218,17 @@ export default function SignUpComponent({
                   "Sign Up"
                 )}
               </Button>
+              <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
+                <span className="bg-card text-muted-foreground relative z-10 px-2">
+                  Or continue with
+                </span>
+              </div>
+              <div className="flex justify-center">
+                <GoogleLogin
+                  onSuccess={handleGoogleSuccess}
+                  onError={() => setErrors({ error: "Google sign up failed" })}
+                />
+              </div>
             </div>
             <div className="mt-4 text-center text-sm">
                   Already have an account? <a className="underline"href="/signin">Sign in</a>
