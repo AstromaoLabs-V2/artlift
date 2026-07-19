@@ -28,7 +28,7 @@ fire==0.7.0
 frozenlist==1.4.1
 fsspec==2026.1.0
 git-filter-repo==2.47.0
-google-auth==2.35.0
+google-auth==2.56.0
 gunicorn==23.0.0
 h11==0.16.0
 h2==4.3.0
