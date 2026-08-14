@@ -91,6 +91,7 @@ export interface Errors {
   password_confirm?: string[];
   error?: string;
   non_field_errors?: string[];
+  credential?: string[];
 }
 
 export interface Error {
