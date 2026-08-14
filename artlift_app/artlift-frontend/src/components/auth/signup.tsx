@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldDescription } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Errors } from "@/types/props";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@radix-ui/react-label";
 import { cn } from "@/lib/utils";
@@ -40,7 +40,7 @@ export default function SignUpComponent({
     });
   };
 
-  const handleSignup = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     setErrors({});
@@ -87,7 +87,7 @@ export default function SignUpComponent({
       const result = await res.json();
 
       if (!res.ok) {
-        setErrors({ error: "Google sign up failed" });
+        setErrors(result as Errors);
         return;
       }
 
@@ -111,7 +111,7 @@ export default function SignUpComponent({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <form>
+      <form onSubmit={handleSignup}>
         <Card className="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 mx-auto w-96">
          <CardHeader className="text-center">
           <CardTitle className="text-xl">Create your account</CardTitle>
@@ -189,7 +189,12 @@ export default function SignUpComponent({
                   )}
                 </Field>
               </div>
-              <Button onClick={handleSignup} disabled={loading}>
+              {(getError("error") || getError("credential")) && (
+                <p className="text-sm text-red-500">
+                  {getError("error") || getError("credential")}
+                </p>
+              )}
+              <Button type="submit" disabled={loading}>
                 {loading ? (
                   <span className="flex items-center justify-center">
                     <svg
